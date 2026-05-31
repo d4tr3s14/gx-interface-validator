@@ -201,12 +201,6 @@ examples/         informes HTML/PDF y JSON consolidado de muestra
 | `SAMPLE01` | Movimientos contables | `HDR` / `TLR` | reglas de débito/crédito vs. body |
 | `SAMPLE02` | Saldos diarios de clientes | `HDR` / `EOF` | otra estructura y reglas, **sin tocar código** |
 
-## 🔒 Anonimización
-
-Interfaz, columnas, valores y datos son **ficticios** (`SAMPLE01`, sistema
-`SMP`, etc.). No se incluye ningún archivo, credencial ni estructura del cliente
-original. Los datos de ejemplo se generan por código en `scripts/`.
-
 ## 📝 Licencia
 
 MIT — ver [LICENSE](LICENSE).
