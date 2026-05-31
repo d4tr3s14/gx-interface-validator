@@ -1,0 +1,23 @@
+{
+  "suite_name": "sample01_header",
+  "section": "header",
+  "expectations": [
+    { "expectation_type": "expect_table_columns_to_match_set",
+      "kwargs": { "column_set": ["REC_TYPE", "SYSTEM_CODE", "FILE_CODE", "PROCESS_DATE", "PROCESS_TYPE", "FILLER_H"] } },
+
+    { "expectation_type": "expect_table_to_have_no_duplicate_rows",
+      "kwargs": { "section": "header", "max_error_details": 20 } },
+
+    { "expectation_type": "expect_column_to_exist", "kwargs": { "column": "REC_TYPE" } },
+    { "expectation_type": "expect_column_values_to_not_be_null", "kwargs": { "column": "REC_TYPE" } },
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "REC_TYPE", "value_set": ["HDR"] } },
+
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "SYSTEM_CODE", "value_set": ["SMP"] } },
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "FILE_CODE", "value_set": ["ACC"] } },
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "PROCESS_TYPE", "value_set": ["D", "M"] } },
+
+    { "expectation_type": "expect_column_values_to_not_be_null", "kwargs": { "column": "PROCESS_DATE" } },
+    { "expectation_type": "expect_column_values_to_be_numeric", "kwargs": { "column": "PROCESS_DATE", "permitir_negativos": false, "permitir_decimales": false } },
+    { "expectation_type": "expect_column_value_lengths_to_equal", "kwargs": { "column": "PROCESS_DATE", "value": 8 } }
+  ]
+}

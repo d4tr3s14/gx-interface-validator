@@ -1,0 +1,61 @@
+# ---------------------------------------------------------------------------
+# Layout (File Definition / FD) de una interfaz de ancho fijo.
+#
+# Reemplaza al "FD.xlsx" del proyecto original: aquí el contrato de posiciones
+# vive como YAML versionable, legible y editable por un QA automatizador.
+#
+# Una interfaz se compone de 3 tipos de registro:
+#   - header : 1 línea, identificada por el marcador al inicio de la línea
+#   - footer : 1 línea (trailer), identificada por su marcador
+#   - body   : el resto de las líneas (detalle)
+#
+# Cada columna se define por su posición de inicio (1-based) y su longitud.
+# Todos los valores se leen como TEXTO para preservar ceros a la izquierda.
+# ---------------------------------------------------------------------------
+interface: SAMPLE01
+description: Interfaz sintética de movimientos contables (datos 100% ficticios).
+
+record_types:
+
+  header:
+    # Una línea es 'header' si los primeros 3 caracteres son "HDR".
+    marker: { start: 1, length: 3, value: "HDR" }
+    columns:
+      - { name: REC_TYPE,     start: 1,  length: 3 }
+      - { name: SYSTEM_CODE,  start: 4,  length: 3 }
+      - { name: FILE_CODE,    start: 7,  length: 3 }
+      - { name: PROCESS_DATE, start: 10, length: 8 }
+      - { name: PROCESS_TYPE, start: 18, length: 1 }
+      - { name: FILLER_H,     start: 19, length: 383 }
+
+  footer:
+    # Una línea es 'footer' si los primeros 3 caracteres son "TLR".
+    marker: { start: 1, length: 3, value: "TLR" }
+    columns:
+      - { name: REC_TYPE,      start: 1,  length: 3 }
+      - { name: RECORD_COUNT,  start: 4,  length: 13 }
+      - { name: SUM_AMOUNT_DR, start: 17, length: 17 }
+      - { name: SUM_AMOUNT_CR, start: 34, length: 17 }
+      - { name: FILLER_F,      start: 51, length: 351 }
+
+  body:
+    # 'body' = todas las líneas que no son header ni footer (sin marcador).
+    columns:
+      - { name: ENTRY_ID,        start: 1,  length: 16 }
+      - { name: FISCAL_PERIOD,   start: 17, length: 9 }
+      - { name: PROCESS_MONTH,   start: 26, length: 3 }
+      - { name: OFFICE_CODE,     start: 29, length: 3 }
+      - { name: CURRENCY_CODE,   start: 32, length: 3 }
+      - { name: AMOUNT_LOCAL,    start: 35, length: 19 }
+      - { name: DECIMALS,        start: 54, length: 3 }
+      - { name: ACCOUNT,         start: 57, length: 20 }
+      - { name: TXN_CODE,        start: 77, length: 3 }
+      - { name: DRCR,            start: 80, length: 1 }
+      - { name: ACCOUNTING_DATE, start: 81, length: 8 }
+      - { name: FILLER_B,        start: 89, length: 183 }
+
+# Reglas de negocio que cruzan secciones (footer declarado vs. body real).
+business_rules:
+  - { type: footer_count_matches_body, name: "Conteo de registros del footer", footer_column: RECORD_COUNT }
+  - { type: footer_sum_matches_body,   name: "Total de débitos del footer",  footer_column: SUM_AMOUNT_DR, body_column: AMOUNT_LOCAL, where: { column: DRCR, equals: "D" } }
+  - { type: footer_sum_matches_body,   name: "Total de créditos del footer", footer_column: SUM_AMOUNT_CR, body_column: AMOUNT_LOCAL, where: { column: DRCR, equals: "C" } }

@@ -1,0 +1,3 @@
+# Carpeta de datos sintéticos de ejemplo (datos ficticios).
+# Los archivos .FC se versionan como muestra y también pueden regenerarse con:
+#   python scripts/generate_sample_data.py

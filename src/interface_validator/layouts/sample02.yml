@@ -1,0 +1,41 @@
+# ---------------------------------------------------------------------------
+# Segunda interfaz de ejemplo: "Saldos diarios de clientes" (datos ficticios).
+#
+# Demuestra que el framework es genérico: otra estructura, otros marcadores
+# (HDR / EOF) y otras reglas de negocio, sin cambiar una línea de código.
+# ---------------------------------------------------------------------------
+interface: SAMPLE02
+description: Interfaz sintética de saldos diarios de clientes (datos ficticios).
+
+record_types:
+
+  header:
+    marker: { start: 1, length: 3, value: "HDR" }
+    columns:
+      - { name: REC_TYPE,    start: 1,  length: 3 }
+      - { name: SYSTEM_CODE, start: 4,  length: 3 }
+      - { name: REPORT_DATE, start: 7,  length: 8 }
+      - { name: REPORT_TYPE, start: 15, length: 1 }
+      - { name: FILLER_H,    start: 16, length: 85 }
+
+  footer:
+    marker: { start: 1, length: 3, value: "EOF" }
+    columns:
+      - { name: REC_TYPE,     start: 1,  length: 3 }
+      - { name: RECORD_COUNT, start: 4,  length: 12 }
+      - { name: SUM_BALANCE,  start: 16, length: 20 }
+      - { name: FILLER_F,     start: 36, length: 65 }
+
+  body:
+    columns:
+      - { name: CLIENT_ID,    start: 1,  length: 12 }
+      - { name: ACCOUNT_TYPE, start: 13, length: 2 }
+      - { name: CURRENCY,     start: 15, length: 3 }
+      - { name: BALANCE,      start: 18, length: 18 }
+      - { name: STATUS,       start: 36, length: 1 }
+      - { name: OPEN_DATE,    start: 37, length: 8 }
+      - { name: FILLER_B,     start: 45, length: 56 }
+
+business_rules:
+  - { type: footer_count_matches_body, name: "Conteo de registros del footer", footer_column: RECORD_COUNT }
+  - { type: footer_sum_matches_body,   name: "Suma de saldos del footer",      footer_column: SUM_BALANCE, body_column: BALANCE }

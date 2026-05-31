@@ -1,0 +1,34 @@
+{
+  "suite_name": "sample01_body",
+  "section": "body",
+  "expectations": [
+    { "expectation_type": "expect_table_columns_to_match_set",
+      "kwargs": { "column_set": ["ENTRY_ID", "FISCAL_PERIOD", "PROCESS_MONTH", "OFFICE_CODE", "CURRENCY_CODE", "AMOUNT_LOCAL", "DECIMALS", "ACCOUNT", "TXN_CODE", "DRCR", "ACCOUNTING_DATE", "FILLER_B"] } },
+
+    { "expectation_type": "expect_column_to_exist", "kwargs": { "column": "ENTRY_ID" } },
+    { "expectation_type": "expect_column_values_to_not_be_null", "kwargs": { "column": "ENTRY_ID" } },
+    { "expectation_type": "expect_column_values_to_be_unique", "kwargs": { "column": "ENTRY_ID" } },
+    { "expectation_type": "expect_column_values_to_be_numeric", "kwargs": { "column": "ENTRY_ID", "permitir_negativos": false, "permitir_decimales": false } },
+
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "FISCAL_PERIOD", "value_set": ["FY2025   "] } },
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "PROCESS_MONTH", "value_set": ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"] } },
+
+    { "expectation_type": "expect_column_values_to_not_be_null", "kwargs": { "column": "OFFICE_CODE" } },
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "OFFICE_CODE", "value_set": ["505"] } },
+    { "expectation_type": "expect_column_values_to_be_numeric", "kwargs": { "column": "OFFICE_CODE", "permitir_negativos": false, "permitir_decimales": false } },
+
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "CURRENCY_CODE", "value_set": ["999"] } },
+
+    { "expectation_type": "expect_column_values_to_not_be_null", "kwargs": { "column": "AMOUNT_LOCAL" } },
+    { "expectation_type": "expect_column_values_to_be_numeric", "kwargs": { "column": "AMOUNT_LOCAL", "permitir_negativos": false, "permitir_decimales": false } },
+
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "DECIMALS", "value_set": ["000"] } },
+
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "TXN_CODE", "value_set": ["DLY", "MLY"] } },
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "DRCR", "value_set": ["C", "D"] } },
+
+    { "expectation_type": "expect_column_values_to_not_be_null", "kwargs": { "column": "ACCOUNTING_DATE" } },
+    { "expectation_type": "expect_column_values_to_be_numeric", "kwargs": { "column": "ACCOUNTING_DATE", "permitir_negativos": false, "permitir_decimales": false } },
+    { "expectation_type": "expect_column_value_lengths_to_equal", "kwargs": { "column": "ACCOUNTING_DATE", "value": 8 } }
+  ]
+}

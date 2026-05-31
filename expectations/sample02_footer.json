@@ -1,0 +1,21 @@
+{
+  "suite_name": "sample02_footer",
+  "section": "footer",
+  "expectations": [
+    { "expectation_type": "expect_table_columns_to_match_set",
+      "kwargs": { "column_set": ["REC_TYPE", "RECORD_COUNT", "SUM_BALANCE", "FILLER_F"] } },
+
+    { "expectation_type": "expect_table_to_have_no_duplicate_rows",
+      "kwargs": { "section": "footer", "max_error_details": 20 } },
+
+    { "expectation_type": "expect_column_to_exist", "kwargs": { "column": "REC_TYPE" } },
+    { "expectation_type": "expect_column_values_to_not_be_null", "kwargs": { "column": "REC_TYPE" } },
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "REC_TYPE", "value_set": ["EOF"] } },
+
+    { "expectation_type": "expect_column_values_to_not_be_null", "kwargs": { "column": "RECORD_COUNT" } },
+    { "expectation_type": "expect_column_values_to_be_numeric", "kwargs": { "column": "RECORD_COUNT", "permitir_negativos": false, "permitir_decimales": false } },
+
+    { "expectation_type": "expect_column_values_to_not_be_null", "kwargs": { "column": "SUM_BALANCE" } },
+    { "expectation_type": "expect_column_values_to_be_numeric", "kwargs": { "column": "SUM_BALANCE", "permitir_negativos": false, "permitir_decimales": false } }
+  ]
+}

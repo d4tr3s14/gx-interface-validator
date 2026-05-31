@@ -1,0 +1,5 @@
+# Normaliza saltos de línea a LF en el repositorio (consistencia multiplataforma).
+* text=auto eol=lf
+
+# Archivos binarios: no tocar.
+*.pdf binary

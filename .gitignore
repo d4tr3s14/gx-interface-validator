@@ -1,0 +1,96 @@
+# =====================================================================
+# .gitignore — gx-interface-validator
+# Se versionan los SAMPLES (datos .FC e informes de ejemplo) para que el
+# repositorio sea útil de inmediato. Se ignora todo lo volátil que se
+# regenera en cada ejecución (Allure, salidas de trabajo, entorno, caches).
+# =====================================================================
+
+# ---------------------------------------------------------------------
+# Allure: resultados crudos y reporte HTML (se regeneran con `pytest`)
+# ---------------------------------------------------------------------
+allure-results/
+allure-report/
+.allure/
+
+# ---------------------------------------------------------------------
+# Carpeta de trabajo en ejecución del CLI (los samples curados viven en
+# examples/). Evita ruido de cada corrida local.
+# ---------------------------------------------------------------------
+output/
+
+# ---------------------------------------------------------------------
+# Great Expectations: artefactos de ejecución (contexto en disco)
+# ---------------------------------------------------------------------
+gx/
+uncommitted/
+great_expectations/uncommitted/
+
+# ---------------------------------------------------------------------
+# Credenciales y secretos (NUNCA subir)
+# ---------------------------------------------------------------------
+.env
+.env.*
+*.env
+secrets.*
+.secrets/
+.streamlit/secrets.toml
+credentials*
+*.pem
+*.key
+*.pfx
+*.p12
+*.crt
+*_rsa
+*_rsa.pub
+config.local.*
+
+# ---------------------------------------------------------------------
+# Python: caches, builds y artefactos de empaquetado
+# ---------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+*.egg
+pip-wheel-metadata/
+
+# ---------------------------------------------------------------------
+# Entornos virtuales
+# ---------------------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+
+# ---------------------------------------------------------------------
+# Herramientas de test / cobertura
+# ---------------------------------------------------------------------
+.pytest_cache/
+.cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# ---------------------------------------------------------------------
+# Editor / Sistema operativo
+# ---------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------------------------------
+# SÍ se versionan (como ejemplos del portafolio):
+#   - data/sample/*.FC     -> datos sintéticos de entrada
+#   - examples/            -> informes HTML/PDF y JSON consolidado de muestra
+#   - .github/             -> workflows de CI
+# ---------------------------------------------------------------------

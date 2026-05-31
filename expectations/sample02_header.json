@@ -1,0 +1,22 @@
+{
+  "suite_name": "sample02_header",
+  "section": "header",
+  "expectations": [
+    { "expectation_type": "expect_table_columns_to_match_set",
+      "kwargs": { "column_set": ["REC_TYPE", "SYSTEM_CODE", "REPORT_DATE", "REPORT_TYPE", "FILLER_H"] } },
+
+    { "expectation_type": "expect_table_to_have_no_duplicate_rows",
+      "kwargs": { "section": "header", "max_error_details": 20 } },
+
+    { "expectation_type": "expect_column_to_exist", "kwargs": { "column": "REC_TYPE" } },
+    { "expectation_type": "expect_column_values_to_not_be_null", "kwargs": { "column": "REC_TYPE" } },
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "REC_TYPE", "value_set": ["HDR"] } },
+
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "SYSTEM_CODE", "value_set": ["POS"] } },
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "REPORT_TYPE", "value_set": ["D", "M"] } },
+
+    { "expectation_type": "expect_column_values_to_not_be_null", "kwargs": { "column": "REPORT_DATE" } },
+    { "expectation_type": "expect_column_values_to_be_numeric", "kwargs": { "column": "REPORT_DATE", "permitir_negativos": false, "permitir_decimales": false } },
+    { "expectation_type": "expect_column_value_lengths_to_equal", "kwargs": { "column": "REPORT_DATE", "value": 8 } }
+  ]
+}

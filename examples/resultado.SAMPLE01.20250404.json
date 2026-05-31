@@ -1,0 +1,889 @@
+{
+  "interface": "SAMPLE01",
+  "file": "SAMPLE01_F20250404.FC",
+  "interface_date": "20250404",
+  "executed_at": "2026-05-31T22:23:48.000301+00:00",
+  "summary": {
+    "total_expectations": 44,
+    "successful": 44,
+    "failed": 0,
+    "success_percent": 100.0,
+    "success": true
+  },
+  "sections": {
+    "header": {
+      "section": "header",
+      "suite": "sample01_header",
+      "success": true,
+      "statistics": {
+        "evaluated_expectations": 11,
+        "successful_expectations": 11,
+        "unsuccessful_expectations": 0,
+        "success_percent": 100.0
+      },
+      "results": [
+        {
+          "expectation_type": "expect_table_columns_to_match_set",
+          "kwargs": {
+            "column_set": [
+              "REC_TYPE",
+              "SYSTEM_CODE",
+              "FILE_CODE",
+              "PROCESS_DATE",
+              "PROCESS_TYPE",
+              "FILLER_H"
+            ]
+          },
+          "success": true,
+          "result": {
+            "observed_value": [
+              "FILE_CODE",
+              "FILLER_H",
+              "PROCESS_DATE",
+              "PROCESS_TYPE",
+              "REC_TYPE",
+              "SYSTEM_CODE"
+            ]
+          }
+        },
+        {
+          "expectation_type": "expect_table_to_have_no_duplicate_rows",
+          "kwargs": {
+            "section": "header",
+            "max_error_details": 20
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_to_exist",
+          "kwargs": {
+            "column": "REC_TYPE"
+          },
+          "success": true,
+          "result": {}
+        },
+        {
+          "expectation_type": "expect_column_values_to_not_be_null",
+          "kwargs": {
+            "column": "REC_TYPE"
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_in_set",
+          "kwargs": {
+            "column": "REC_TYPE",
+            "value_set": [
+              "HDR"
+            ]
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_in_set",
+          "kwargs": {
+            "column": "SYSTEM_CODE",
+            "value_set": [
+              "SMP"
+            ]
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_in_set",
+          "kwargs": {
+            "column": "FILE_CODE",
+            "value_set": [
+              "ACC"
+            ]
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_in_set",
+          "kwargs": {
+            "column": "PROCESS_TYPE",
+            "value_set": [
+              "D",
+              "M"
+            ]
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_not_be_null",
+          "kwargs": {
+            "column": "PROCESS_DATE"
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_numeric",
+          "kwargs": {
+            "column": "PROCESS_DATE",
+            "permitir_negativos": false,
+            "permitir_decimales": false
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_value_lengths_to_equal",
+          "kwargs": {
+            "column": "PROCESS_DATE",
+            "value": 8
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        }
+      ]
+    },
+    "body": {
+      "section": "body",
+      "suite": "sample01_body",
+      "success": true,
+      "statistics": {
+        "evaluated_expectations": 19,
+        "successful_expectations": 19,
+        "unsuccessful_expectations": 0,
+        "success_percent": 100.0
+      },
+      "results": [
+        {
+          "expectation_type": "expect_table_columns_to_match_set",
+          "kwargs": {
+            "column_set": [
+              "ENTRY_ID",
+              "FISCAL_PERIOD",
+              "PROCESS_MONTH",
+              "OFFICE_CODE",
+              "CURRENCY_CODE",
+              "AMOUNT_LOCAL",
+              "DECIMALS",
+              "ACCOUNT",
+              "TXN_CODE",
+              "DRCR",
+              "ACCOUNTING_DATE",
+              "FILLER_B"
+            ]
+          },
+          "success": true,
+          "result": {
+            "observed_value": [
+              "ACCOUNT",
+              "ACCOUNTING_DATE",
+              "AMOUNT_LOCAL",
+              "CURRENCY_CODE",
+              "DECIMALS",
+              "DRCR",
+              "ENTRY_ID",
+              "FILLER_B",
+              "FISCAL_PERIOD",
+              "OFFICE_CODE",
+              "PROCESS_MONTH",
+              "TXN_CODE"
+            ]
+          }
+        },
+        {
+          "expectation_type": "expect_column_to_exist",
+          "kwargs": {
+            "column": "ENTRY_ID"
+          },
+          "success": true,
+          "result": {}
+        },
+        {
+          "expectation_type": "expect_column_values_to_not_be_null",
+          "kwargs": {
+            "column": "ENTRY_ID"
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_unique",
+          "kwargs": {
+            "column": "ENTRY_ID"
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_numeric",
+          "kwargs": {
+            "column": "ENTRY_ID",
+            "permitir_negativos": false,
+            "permitir_decimales": false
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_in_set",
+          "kwargs": {
+            "column": "FISCAL_PERIOD",
+            "value_set": [
+              "FY2025   "
+            ]
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_in_set",
+          "kwargs": {
+            "column": "PROCESS_MONTH",
+            "value_set": [
+              "JAN",
+              "FEB",
+              "MAR",
+              "APR",
+              "MAY",
+              "JUN",
+              "JUL",
+              "AUG",
+              "SEP",
+              "OCT",
+              "NOV",
+              "DEC"
+            ]
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_not_be_null",
+          "kwargs": {
+            "column": "OFFICE_CODE"
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_in_set",
+          "kwargs": {
+            "column": "OFFICE_CODE",
+            "value_set": [
+              "505"
+            ]
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_numeric",
+          "kwargs": {
+            "column": "OFFICE_CODE",
+            "permitir_negativos": false,
+            "permitir_decimales": false
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_in_set",
+          "kwargs": {
+            "column": "CURRENCY_CODE",
+            "value_set": [
+              "999"
+            ]
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_not_be_null",
+          "kwargs": {
+            "column": "AMOUNT_LOCAL"
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_numeric",
+          "kwargs": {
+            "column": "AMOUNT_LOCAL",
+            "permitir_negativos": false,
+            "permitir_decimales": false
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_in_set",
+          "kwargs": {
+            "column": "DECIMALS",
+            "value_set": [
+              "000"
+            ]
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_in_set",
+          "kwargs": {
+            "column": "TXN_CODE",
+            "value_set": [
+              "DLY",
+              "MLY"
+            ]
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_in_set",
+          "kwargs": {
+            "column": "DRCR",
+            "value_set": [
+              "C",
+              "D"
+            ]
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_not_be_null",
+          "kwargs": {
+            "column": "ACCOUNTING_DATE"
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_numeric",
+          "kwargs": {
+            "column": "ACCOUNTING_DATE",
+            "permitir_negativos": false,
+            "permitir_decimales": false
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_value_lengths_to_equal",
+          "kwargs": {
+            "column": "ACCOUNTING_DATE",
+            "value": 8
+          },
+          "success": true,
+          "result": {
+            "element_count": 8,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        }
+      ]
+    },
+    "footer": {
+      "section": "footer",
+      "suite": "sample01_footer",
+      "success": true,
+      "statistics": {
+        "evaluated_expectations": 11,
+        "successful_expectations": 11,
+        "unsuccessful_expectations": 0,
+        "success_percent": 100.0
+      },
+      "results": [
+        {
+          "expectation_type": "expect_table_columns_to_match_set",
+          "kwargs": {
+            "column_set": [
+              "REC_TYPE",
+              "RECORD_COUNT",
+              "SUM_AMOUNT_DR",
+              "SUM_AMOUNT_CR",
+              "FILLER_F"
+            ]
+          },
+          "success": true,
+          "result": {
+            "observed_value": [
+              "FILLER_F",
+              "RECORD_COUNT",
+              "REC_TYPE",
+              "SUM_AMOUNT_CR",
+              "SUM_AMOUNT_DR"
+            ]
+          }
+        },
+        {
+          "expectation_type": "expect_table_to_have_no_duplicate_rows",
+          "kwargs": {
+            "section": "footer",
+            "max_error_details": 20
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_to_exist",
+          "kwargs": {
+            "column": "REC_TYPE"
+          },
+          "success": true,
+          "result": {}
+        },
+        {
+          "expectation_type": "expect_column_values_to_not_be_null",
+          "kwargs": {
+            "column": "REC_TYPE"
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_in_set",
+          "kwargs": {
+            "column": "REC_TYPE",
+            "value_set": [
+              "TLR"
+            ]
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_not_be_null",
+          "kwargs": {
+            "column": "RECORD_COUNT"
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_numeric",
+          "kwargs": {
+            "column": "RECORD_COUNT",
+            "permitir_negativos": false,
+            "permitir_decimales": false
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_not_be_null",
+          "kwargs": {
+            "column": "SUM_AMOUNT_DR"
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_numeric",
+          "kwargs": {
+            "column": "SUM_AMOUNT_DR",
+            "permitir_negativos": false,
+            "permitir_decimales": false
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_not_be_null",
+          "kwargs": {
+            "column": "SUM_AMOUNT_CR"
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        },
+        {
+          "expectation_type": "expect_column_values_to_be_numeric",
+          "kwargs": {
+            "column": "SUM_AMOUNT_CR",
+            "permitir_negativos": false,
+            "permitir_decimales": false
+          },
+          "success": true,
+          "result": {
+            "element_count": 1,
+            "unexpected_count": 0,
+            "unexpected_percent": 0.0,
+            "partial_unexpected_list": [],
+            "missing_count": 0,
+            "missing_percent": 0.0,
+            "unexpected_percent_total": 0.0,
+            "unexpected_percent_nonmissing": 0.0,
+            "partial_unexpected_counts": [],
+            "partial_unexpected_index_list": []
+          }
+        }
+      ]
+    },
+    "cross_section": {
+      "section": "cross_section",
+      "suite": "business_rules",
+      "success": true,
+      "statistics": {
+        "evaluated_expectations": 3,
+        "successful_expectations": 3,
+        "unsuccessful_expectations": 0,
+        "success_percent": 100.0
+      },
+      "results": [
+        {
+          "expectation_type": "Conteo de registros del footer",
+          "kwargs": {},
+          "success": true,
+          "result": {
+            "expected_value": 8,
+            "observed_value": 8
+          }
+        },
+        {
+          "expectation_type": "Total de débitos del footer",
+          "kwargs": {},
+          "success": true,
+          "result": {
+            "expected_value": 8984528,
+            "observed_value": 8984528
+          }
+        },
+        {
+          "expectation_type": "Total de créditos del footer",
+          "kwargs": {},
+          "success": true,
+          "result": {
+            "expected_value": 4954410,
+            "observed_value": 4954410
+          }
+        }
+      ]
+    }
+  },
+  "row_counts": {
+    "header": 1,
+    "body": 8,
+    "footer": 1
+  },
+  "record_count": 8
+}

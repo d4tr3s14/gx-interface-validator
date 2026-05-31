@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gx-interface-validator"
+version = "0.1.0"
+description = "Validación declarativa de interfaces de archivos plano (fixed-width) con Great Expectations, BDD (pytest-bdd) y reportería Allure."
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = { text = "MIT" }
+authors = [{ name = "d4tr3s14" }]
+keywords = ["great-expectations", "data-quality", "bdd", "pytest-bdd", "allure", "qa-automation"]
+
+dependencies = [
+    "great_expectations>=1.0,<2.0",
+    "pandas>=2.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0",
+    "pytest-bdd>=7.0",
+    "allure-pytest>=2.13",
+]
+# Exportación del informe de usuario a PDF (requiere librerías de sistema GTK).
+# El informe HTML no necesita esto; se puede imprimir a PDF desde el navegador.
+report = [
+    "weasyprint>=60",
+]
+
+[project.scripts]
+validate-interface = "interface_validator.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"interface_validator.layouts" = ["*.yml"]
+
+[tool.pytest.ini_options]
+bdd_features_base_dir = "features"
+testpaths = ["tests", "features"]
+python_files = ["test_*.py"]
+addopts = "--alluredir=allure-results -ra"
