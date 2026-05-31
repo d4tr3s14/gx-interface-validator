@@ -1,5 +1,10 @@
 # GX Interface Validator
 
+[![CI](https://github.com/d4tr3s14/gx-interface-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/d4tr3s14/gx-interface-validator/actions/workflows/ci.yml)
+[![Allure Report](https://img.shields.io/badge/Allure-report-fa4d56?logo=allure)](https://d4tr3s14.github.io/gx-interface-validator/)
+[![Python](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-3776ab?logo=python&logoColor=white)](pyproject.toml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 Validación declarativa de **interfaces de archivos planos de ancho fijo**
 (_fixed-width flat files_) usando **Great Expectations 1.x**, una capa **BDD con
 Gherkin (pytest-bdd)** y reportería en **Allure**.

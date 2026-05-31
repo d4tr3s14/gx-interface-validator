@@ -3,3 +3,14 @@
 
 # Archivos binarios: no tocar.
 *.pdf binary
+
+# --- Detección de lenguajes (GitHub Linguist) ---------------------------
+# Los informes de ejemplo (HTML) son documentación generada, no código fuente:
+# no deben contar en la barra de lenguajes del repositorio.
+examples/** linguist-documentation
+
+# Los datos sintéticos .FC no son un lenguaje de programación.
+*.FC linguist-detectable=false
+
+# Asegura que los .feature se reconozcan como Gherkin.
+*.feature linguist-language=Gherkin
