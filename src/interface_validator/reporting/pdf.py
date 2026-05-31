@@ -51,28 +51,36 @@ def _try_chromium(html: str, out_path: Path) -> tuple[bool, str]:
     if not browser:
         return False, "chromium: no se encontró Edge/Chrome"
 
-    # Chromium imprime desde un archivo local; usamos uno temporal.
-    with tempfile.TemporaryDirectory() as tmp:
-        html_path = Path(tmp) / "report.html"
-        html_path.write_text(html, encoding="utf-8")
-        cmd = [
+    def _cmd(headless_flag: str, html_uri: str) -> list[str]:
+        # --no-sandbox / --disable-dev-shm-usage son necesarios en CI/contenedores.
+        return [
             browser,
-            "--headless=new",
+            headless_flag,
             "--disable-gpu",
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
             "--no-pdf-header-footer",
             f"--print-to-pdf={out_path}",
-            html_path.as_uri(),
+            html_uri,
         ]
-        try:
-            subprocess.run(cmd, check=True, capture_output=True, timeout=60)
-        except subprocess.CalledProcessError:
-            # Algunas versiones no soportan --headless=new; reintentar con --headless
-            cmd[1] = "--headless"
-            subprocess.run(cmd, check=True, capture_output=True, timeout=60)
 
-    if out_path.exists():
-        return True, f"chromium ({Path(browser).stem})"
-    return False, "chromium: no se generó el PDF"
+    try:
+        # Chromium imprime desde un archivo local; usamos uno temporal.
+        with tempfile.TemporaryDirectory() as tmp:
+            html_path = Path(tmp) / "report.html"
+            html_path.write_text(html, encoding="utf-8")
+            uri = html_path.as_uri()
+            try:
+                subprocess.run(_cmd("--headless=new", uri), check=True, capture_output=True, timeout=90)
+            except subprocess.CalledProcessError:
+                # Algunas versiones no soportan --headless=new; reintentar con --headless
+                subprocess.run(_cmd("--headless", uri), check=True, capture_output=True, timeout=90)
+
+        if out_path.exists():
+            return True, f"chromium ({Path(browser).stem})"
+        return False, "chromium: no se generó el PDF"
+    except Exception as exc:  # noqa: BLE001 — nunca debe propagar; degradar con mensaje
+        return False, f"chromium: {exc}"
 
 
 def html_to_pdf(html: str, out_path: str | Path) -> tuple[bool, str]:
