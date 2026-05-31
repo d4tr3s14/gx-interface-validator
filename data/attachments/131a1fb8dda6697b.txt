@@ -1,0 +1,7 @@
+Categoría        : Dominio
+Validación       : Valores dentro del conjunto permitido
+Columna          : DRCR
+Qué se esperaba  : Valores permitidos: C, D
+Valor encontrado : 'X'
+Línea(s)         : 1
+Datos afectados  : 1

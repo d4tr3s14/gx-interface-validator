@@ -1,0 +1,7 @@
+Categoría        : Dominio
+Validación       : Valores dentro del conjunto permitido
+Columna          : PROCESS_TYPE
+Qué se esperaba  : Valores permitidos: D, M
+Valor encontrado : 'X'
+Línea(s)         : 1
+Datos afectados  : 1

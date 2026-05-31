@@ -1,0 +1,7 @@
+Categoría        : Negocio
+Validación       : Conteo de registros del footer
+Columna          : Expectativa general
+Qué se esperaba  : Valor esperado: 105
+Valor encontrado : declarado: 105 · calculado: 6
+Línea(s)         : footer
+Datos afectados  : 1

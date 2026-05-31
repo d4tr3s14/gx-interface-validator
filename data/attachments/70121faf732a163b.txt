@@ -1,0 +1,7 @@
+Categoría        : Unicidad
+Validación       : Valores únicos (sin duplicados)
+Columna          : ENTRY_ID
+Qué se esperaba  : Valores únicos (sin duplicados)
+Valor encontrado : '0000000000000001'
+Línea(s)         : 1, 6
+Datos afectados  : 2

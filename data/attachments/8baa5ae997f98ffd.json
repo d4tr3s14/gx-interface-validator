@@ -1,0 +1,23 @@
+{
+  "element_count": 6,
+  "unexpected_count": 2,
+  "unexpected_percent": 33.33333333333333,
+  "partial_unexpected_list": [
+    "0000000000000001",
+    "0000000000000001"
+  ],
+  "missing_count": 0,
+  "missing_percent": 0.0,
+  "unexpected_percent_total": 33.33333333333333,
+  "unexpected_percent_nonmissing": 33.33333333333333,
+  "partial_unexpected_counts": [
+    {
+      "value": "0000000000000001",
+      "count": 2
+    }
+  ],
+  "partial_unexpected_index_list": [
+    0,
+    5
+  ]
+}

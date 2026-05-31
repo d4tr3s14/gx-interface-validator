@@ -1,0 +1,7 @@
+Categoría        : Negocio
+Validación       : Total de débitos del footer
+Columna          : Expectativa general
+Qué se esperaba  : Valor esperado: 1
+Valor encontrado : declarado: 1 · calculado: 55515
+Línea(s)         : footer
+Datos afectados  : 1

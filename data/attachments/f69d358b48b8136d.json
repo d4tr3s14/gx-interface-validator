@@ -1,0 +1,21 @@
+{
+  "element_count": 1,
+  "unexpected_count": 1,
+  "unexpected_percent": 100.0,
+  "partial_unexpected_list": [
+    "X"
+  ],
+  "missing_count": 0,
+  "missing_percent": 0.0,
+  "unexpected_percent_total": 100.0,
+  "unexpected_percent_nonmissing": 100.0,
+  "partial_unexpected_counts": [
+    {
+      "value": "X",
+      "count": 1
+    }
+  ],
+  "partial_unexpected_index_list": [
+    0
+  ]
+}
