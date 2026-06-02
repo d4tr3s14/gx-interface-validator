@@ -5,6 +5,9 @@
 [![Python](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-3776ab?logo=python&logoColor=white)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
+> 📘 ¿Primera vez o perfil junior? Lee la **[Guía detallada paso a paso](docs/GUIA.md)**
+> (glosario, para qué sirve cada herramienta, ejecución local y CI).
+
 Validación declarativa de **interfaces de archivos planos de ancho fijo**
 (_fixed-width flat files_) usando **Great Expectations 1.x**, una capa **BDD con
 Gherkin (pytest-bdd)** y reportería en **Allure**.
