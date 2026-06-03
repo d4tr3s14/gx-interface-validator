@@ -194,3 +194,47 @@ def insert_comparison_diff(conn, comparison_section_id: int, diff: dict) -> None
                 diff.get("line_a"), diff.get("line_b"),
             ),
         )
+
+
+# --------------------------------------------------------------------------- #
+# Administración del catálogo (alta/listado de proyectos y usuarios)
+# --------------------------------------------------------------------------- #
+def add_project(conn, project_key: str, name: str, owner: Optional[str] = None) -> int:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            INSERT INTO dim_project (project_key, name, owner) VALUES (%s, %s, %s)
+            ON CONFLICT (project_key) DO UPDATE
+                SET name = EXCLUDED.name,
+                    owner = COALESCE(EXCLUDED.owner, dim_project.owner)
+            RETURNING project_id
+            """,
+            (project_key, name, owner),
+        )
+        return cur.fetchone()[0]
+
+
+def add_user(conn, username: str, display_name: Optional[str] = None) -> int:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            INSERT INTO dim_user (username, display_name) VALUES (%s, %s)
+            ON CONFLICT (username) DO UPDATE
+                SET display_name = COALESCE(EXCLUDED.display_name, dim_user.display_name)
+            RETURNING user_id
+            """,
+            (username, display_name),
+        )
+        return cur.fetchone()[0]
+
+
+def list_projects(conn) -> list[tuple]:
+    with conn.cursor() as cur:
+        cur.execute("SELECT project_key, name, owner FROM dim_project ORDER BY project_key")
+        return cur.fetchall()
+
+
+def list_users(conn) -> list[tuple]:
+    with conn.cursor() as cur:
+        cur.execute("SELECT username, display_name FROM dim_user ORDER BY username")
+        return cur.fetchall()
