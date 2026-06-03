@@ -206,8 +206,30 @@ examples/         informes HTML/PDF y JSON consolidado de muestra
 
 | Interfaz | Descripción | Marcadores | Demuestra |
 |----------|-------------|------------|-----------|
-| `SAMPLE01` | Movimientos contables | `HDR` / `TLR` | reglas de débito/crédito vs. body |
-| `SAMPLE02` | Saldos diarios de clientes | `HDR` / `EOF` | otra estructura y reglas, **sin tocar código** |
+| `SAMPLE01` | Movimientos contables (ancho fijo) | `HDR` / `TLR` | reglas de débito/crédito vs. body |
+| `SAMPLE02` | Saldos diarios de clientes (ancho fijo) | `HDR` / `EOF` | otra estructura y reglas, **sin tocar código** |
+| `SAMPLE04` | Transacciones (delimitada por `,`) | `HDR` / `EOF` | soporte de archivos **delimitados** (`,` `;` `\|` `\t`) |
+
+## 🔍 Comparación de interfaces
+
+Además de validar, se pueden **comparar dos versiones** de una misma interfaz
+(A vs B) en dos modos:
+
+```bash
+# Por ID: registro a registro usando columnas clave, por sección
+compare-interfaces -a data/sample/SAMPLE01_F20250404.FC -b data/sample/SAMPLE01_F20250402.FC \
+    --layout sample01 --mode by_id          # usa key_columns del layout (override con --keys)
+
+# Por línea: archivo completo línea a línea
+compare-interfaces -a A.FC -b B.FC --mode by_line
+
+# Persistir la comparación en la BD
+compare-interfaces -a A.FC -b B.FC --layout sample01 --mode by_id \
+    --project RIESGO --user dleiva --persist
+```
+
+Reporta **% de coincidencia**, registros **solo en A / solo en B** y los que
+**difieren** (con detalle por columna), global y por sección.
 
 ## 🗄️ Persistencia de resultados (PostgreSQL)
 

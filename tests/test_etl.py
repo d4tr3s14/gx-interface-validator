@@ -50,3 +50,17 @@ def test_unknown_user_raises_catalog_error():
     _, document = parse_and_validate(DATA_DIR / "SAMPLE01_F20250404.FC", "sample01")
     with pytest.raises(CatalogError):
         load_document(document, project="DEMO", user="usuario_inexistente")
+
+
+def test_load_comparison_persists_run():
+    from interface_validator.comparison import compare_interfaces
+    from interface_validator.db import load_comparison
+
+    document = compare_interfaces(
+        DATA_DIR / "SAMPLE01_F20250404.FC",
+        DATA_DIR / "SAMPLE01_F20250402.FC",
+        "sample01",
+        mode="by_id",
+    )
+    comparison_run_id = load_comparison(document, project="DEMO", user="dleiva")
+    assert isinstance(comparison_run_id, int) and comparison_run_id > 0

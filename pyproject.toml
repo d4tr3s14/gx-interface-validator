@@ -36,6 +36,7 @@ db = [
 
 [project.scripts]
 validate-interface = "interface_validator.cli:main"
+compare-interfaces = "interface_validator.compare_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

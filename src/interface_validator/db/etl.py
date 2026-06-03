@@ -83,3 +83,42 @@ def load_document(document: dict, project: str, user: str, conn=None) -> int:
     finally:
         if own_conn:
             conn.close()
+
+
+def load_comparison(document: dict, project: str, user: str, conn=None) -> int:
+    """
+    Persiste un documento de comparación. Devuelve el `comparison_run_id`.
+
+    Mismas reglas de catálogo: el proyecto y el usuario deben existir.
+    """
+    own_conn = conn is None
+    conn = conn or get_connection()
+    try:
+        project_id = repo.get_project_id(conn, project)
+        if project_id is None:
+            raise CatalogError(
+                f"El proyecto '{project}' no existe en el catálogo (dim_project)."
+            )
+        user_id = repo.get_user_id(conn, user)
+        if user_id is None:
+            raise CatalogError(
+                f"El usuario '{user}' no existe en el catálogo (dim_user)."
+            )
+
+        interface_id = repo.ensure_interface(conn, document["interface"], document.get("layout"))
+        repo.ensure_bridge(conn, project_id, interface_id)
+
+        comparison_run_id = repo.insert_comparison_run(conn, document, interface_id, project_id, user_id)
+        for section, block in document.get("sections", {}).items():
+            section_id = repo.insert_comparison_section(conn, comparison_run_id, section, block)
+            for diff in block.get("diffs", []):
+                repo.insert_comparison_diff(conn, section_id, diff)
+
+        conn.commit()
+        return comparison_run_id
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        if own_conn:
+            conn.close()
