@@ -261,6 +261,24 @@ validate-interface --file data/sample/SAMPLE01_F20250404.FC \
 |----------|---------|
 | `DATABASE_URL` | `postgresql://gx:gx@localhost:5432/gx` |
 
+## 📊 Dashboards de reportería (Metabase)
+
+El stack incluye **Metabase** para visualizar la reportería sin escribir código,
+leyendo directamente las vistas `vw_*`.
+
+```bash
+docker compose up -d                 # PostgreSQL + Metabase
+pip install -e ".[viz]"
+python scripts/setup_metabase.py     # autoconfigura admin + datasource + dashboard
+# -> http://localhost:3000/dashboard/2   (admin@gx.local / gxgxgxgx1)
+```
+
+El script crea automáticamente la conexión a la BD y un dashboard con
+**validaciones vs. comparaciones por proyecto**, **% de éxito promedio**,
+**errores más comunes** y **actividad por interfaz**.
+
+![Dashboard de Metabase — reportería por proyecto](docs/metabase-dashboard.png)
+
 ## 📝 Licencia
 
 MIT — ver [LICENSE](LICENSE).
