@@ -38,8 +38,12 @@ def _build_parser() -> argparse.ArgumentParser:
     # Metadatos del informe
     parser.add_argument("--system", default=None, help="Sistema / área dueña de la interfaz.")
     parser.add_argument("--responsible", default=None, help="Responsable del proyecto.")
-    parser.add_argument("--project", default=None, help="Proyecto asociado.")
+    parser.add_argument("--project", default=None, help="Proyecto asociado (project_key o nombre).")
     parser.add_argument("--environment", default=None, help="Ambiente (QA, PROD, ...).")
+    # Persistencia en base de datos
+    parser.add_argument("--persist", action="store_true",
+                        help="Guarda los resultados en PostgreSQL (requiere --project y --user).")
+    parser.add_argument("--user", default=None, help="Usuario que ejecuta la validación (debe existir en el catálogo).")
     return parser
 
 
@@ -61,6 +65,11 @@ def main(argv: list[str] | None = None) -> int:
     output_dir = Path(args.output) if args.output else config.OUTPUT_DIR
     expectations_dir = Path(args.expectations) if args.expectations else config.EXPECTATIONS_DIR
 
+    if args.persist and (not args.project or not args.user):
+        print("[ERROR] --persist requiere --project y --user.", file=sys.stderr)
+        return 2
+
+    run_id = None
     try:
         parsed, document = parse_and_validate(args.file, args.layout, expectations_dir)
         out_path = write_consolidated(document, output_dir)
@@ -72,6 +81,15 @@ def main(argv: list[str] | None = None) -> int:
                 document, output_dir, meta=_meta_from_args(args),
                 parsed=parsed, fmt=args.report,
             )
+
+        if args.persist:
+            from .db import CatalogError, load_document
+
+            try:
+                run_id = load_document(document, project=args.project, user=args.user)
+            except CatalogError as exc:
+                print(f"[ERROR] {exc}", file=sys.stderr)
+                return 2
     except Exception as exc:  # noqa: BLE001
         print(f"[ERROR] {exc}", file=sys.stderr)
         return 2
@@ -86,7 +104,10 @@ def main(argv: list[str] | None = None) -> int:
         st = block["statistics"]
         mark = "OK " if block["success"] else "XX "
         print(f"  [{mark}] {section:<14} {st['successful_expectations']}/{st['evaluated_expectations']}")
+    print(f"Duración : {document.get('duration_ms', '?')} ms")
     print(f"JSON     : {document.get('_output_path', '(no escrito)')}")
+    if run_id is not None:
+        print(f"BD       : guardado con run_id={run_id} (proyecto '{args.project}', usuario '{args.user}')")
     if report_paths.get("html"):
         print(f"Informe  : {report_paths['html']}")
     if report_paths.get("pdf"):

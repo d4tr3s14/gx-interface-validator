@@ -209,6 +209,36 @@ examples/         informes HTML/PDF y JSON consolidado de muestra
 | `SAMPLE01` | Movimientos contables | `HDR` / `TLR` | reglas de débito/crédito vs. body |
 | `SAMPLE02` | Saldos diarios de clientes | `HDR` / `EOF` | otra estructura y reglas, **sin tocar código** |
 
+## 🗄️ Persistencia de resultados (PostgreSQL)
+
+Las validaciones se pueden **guardar en una base de datos** para agrupar por
+proyecto, registrar quién validó y cuánto tardó cada ejecución.
+
+**Modelo** (estrella): dimensiones `dim_project`, `dim_user`, `dim_interface`,
+un puente N:M `bridge_project_interface`, y tres niveles de hechos
+`fact_run` → `fact_section` → `fact_expectation`. Una interfaz puede validarse en
+varios proyectos y un proyecto tener varias interfaces.
+
+```bash
+# 1) Levantar PostgreSQL (crea esquema + catálogo de ejemplo automáticamente)
+docker compose up -d db
+pip install -e ".[db]"
+
+# 2) Validar y persistir (el proyecto y el usuario DEBEN existir en el catálogo)
+validate-interface --file data/sample/SAMPLE01_F20250404.FC \
+    --project RIESGO --user dleiva --persist
+```
+
+- **Catálogo gestionado:** si el `--project` o el `--user` no existen en
+  `dim_project` / `dim_user`, la validación falla con un mensaje claro (no se
+  inserta nada). El catálogo de ejemplo se siembra en `src/interface_validator/db/seed.sql`.
+- **Duración:** cada ejecución registra `started_at`, `finished_at` y `duration_ms`.
+- **Consultar:** la vista `vw_run_summary` da el resumen por ejecución/proyecto.
+
+| Variable | Default |
+|----------|---------|
+| `DATABASE_URL` | `postgresql://gx:gx@localhost:5432/gx` |
+
 ## 📝 Licencia
 
 MIT — ver [LICENSE](LICENSE).

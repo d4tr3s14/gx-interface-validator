@@ -29,6 +29,10 @@ test = [
 report = [
     "weasyprint>=60",
 ]
+# Persistencia de resultados en PostgreSQL.
+db = [
+    "psycopg[binary]>=3.1",
+]
 
 [project.scripts]
 validate-interface = "interface_validator.cli:main"
