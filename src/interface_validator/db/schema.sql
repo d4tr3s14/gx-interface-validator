@@ -94,6 +94,59 @@ CREATE TABLE IF NOT EXISTS fact_expectation (
 );
 CREATE INDEX IF NOT EXISTS ix_fact_expectation_section ON fact_expectation(section_id);
 
+-- ============================================================================
+-- COMPARACIÓN de dos versiones/archivos de una misma interfaz (A vs B).
+-- Mismo enfoque estrella: run -> section -> diff. Reutiliza las dimensiones.
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS fact_comparison_run (
+    comparison_run_id BIGSERIAL PRIMARY KEY,
+    interface_id   INT NOT NULL REFERENCES dim_interface(interface_id),
+    project_id     INT NOT NULL REFERENCES dim_project(project_id),
+    user_id        INT NOT NULL REFERENCES dim_user(user_id),
+    mode           TEXT NOT NULL CHECK (mode IN ('by_line', 'by_id')),
+    key_columns    TEXT,                       -- columnas ID (solo en by_id), separadas por coma
+    file_a         TEXT NOT NULL,
+    file_b         TEXT NOT NULL,
+    started_at     TIMESTAMPTZ,
+    finished_at    TIMESTAMPTZ,
+    duration_ms    INT,
+    elements_a     INT,
+    elements_b     INT,
+    only_in_a      INT,
+    only_in_b      INT,
+    differing      INT,
+    match_percent  REAL,
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS ix_cmp_run_project   ON fact_comparison_run(project_id);
+CREATE INDEX IF NOT EXISTS ix_cmp_run_interface ON fact_comparison_run(interface_id);
+
+CREATE TABLE IF NOT EXISTS fact_comparison_section (
+    comparison_section_id BIGSERIAL PRIMARY KEY,
+    comparison_run_id BIGINT NOT NULL REFERENCES fact_comparison_run(comparison_run_id) ON DELETE CASCADE,
+    section        TEXT NOT NULL,              -- header/body/footer, o 'whole_file' (by_line)
+    elements_a     INT,
+    elements_b     INT,
+    only_in_a      INT,
+    only_in_b      INT,
+    differing      INT,
+    match_percent  REAL
+);
+CREATE INDEX IF NOT EXISTS ix_cmp_section_run ON fact_comparison_section(comparison_run_id);
+
+CREATE TABLE IF NOT EXISTS fact_comparison_diff (
+    comparison_diff_id BIGSERIAL PRIMARY KEY,
+    comparison_section_id BIGINT NOT NULL REFERENCES fact_comparison_section(comparison_section_id) ON DELETE CASCADE,
+    row_id           TEXT,                     -- id de registro o "line_N"
+    discrepancy_type TEXT,                     -- only_in_a | only_in_b | value_differs
+    column_name      TEXT,
+    value_a          TEXT,
+    value_b          TEXT,
+    line_a           INT,
+    line_b           INT
+);
+CREATE INDEX IF NOT EXISTS ix_cmp_diff_section ON fact_comparison_diff(comparison_section_id);
+
 -- --- Vista de conveniencia: resumen de ejecuciones por proyecto -------------
 CREATE OR REPLACE VIEW vw_run_summary AS
 SELECT r.run_id,
@@ -112,3 +165,25 @@ FROM fact_run r
 JOIN dim_project   p ON p.project_id   = r.project_id
 JOIN dim_interface i ON i.interface_id = r.interface_id
 JOIN dim_user      u ON u.user_id      = r.user_id;
+
+-- --- Vista de conveniencia: resumen de comparaciones por proyecto -----------
+CREATE OR REPLACE VIEW vw_comparison_summary AS
+SELECT c.comparison_run_id,
+       p.project_key,
+       p.name        AS project_name,
+       i.name        AS interface,
+       u.username,
+       c.mode,
+       c.key_columns,
+       c.file_a,
+       c.file_b,
+       c.started_at,
+       c.duration_ms,
+       c.match_percent,
+       c.only_in_a,
+       c.only_in_b,
+       c.differing
+FROM fact_comparison_run c
+JOIN dim_project   p ON p.project_id   = c.project_id
+JOIN dim_interface i ON i.interface_id = c.interface_id
+JOIN dim_user      u ON u.user_id      = c.user_id;
