@@ -1,0 +1,13 @@
+{
+  "suite_name": "sample04_header",
+  "section": "header",
+  "expectations": [
+    { "expectation_type": "expect_table_columns_to_match_set",
+      "kwargs": { "column_set": ["REC_TYPE", "SYSTEM_CODE", "REPORT_DATE"] } },
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "REC_TYPE", "value_set": ["HDR"] } },
+    { "expectation_type": "expect_column_values_to_be_in_set", "kwargs": { "column": "SYSTEM_CODE", "value_set": ["SMP"] } },
+    { "expectation_type": "expect_column_values_to_not_be_null", "kwargs": { "column": "REPORT_DATE" } },
+    { "expectation_type": "expect_column_values_to_be_numeric", "kwargs": { "column": "REPORT_DATE", "permitir_negativos": false, "permitir_decimales": false } },
+    { "expectation_type": "expect_column_value_lengths_to_equal", "kwargs": { "column": "REPORT_DATE", "value": 8 } }
+  ]
+}

@@ -1,0 +1,32 @@
+# ---------------------------------------------------------------------------
+# Interfaz de ejemplo DELIMITADA (CSV) — demuestra el soporte de delimitadores.
+#
+# A diferencia del ancho fijo, aquí los campos se separan por un carácter.
+# Cambia `delimiter` a ";", "|" o "\t" para otros formatos comunes.
+#
+# En formato delimitado:
+#   - `delimiter`: el separador de campos.
+#   - el marcador de header/footer se identifica por el ÍNDICE de campo (field).
+#   - las columnas se definen por ORDEN (lista de nombres), no por posición.
+# ---------------------------------------------------------------------------
+interface: SAMPLE04
+format: delimited
+delimiter: ","
+description: Interfaz sintética delimitada por comas (datos ficticios).
+
+record_types:
+
+  header:
+    marker: { field: 0, value: "HDR" }
+    columns: [REC_TYPE, SYSTEM_CODE, REPORT_DATE]
+
+  footer:
+    marker: { field: 0, value: "EOF" }
+    columns: [REC_TYPE, RECORD_COUNT, SUM_AMOUNT]
+
+  body:
+    columns: [TXN_ID, ACCOUNT, CURRENCY, AMOUNT, STATUS]
+
+business_rules:
+  - { type: footer_count_matches_body, name: "Conteo de registros del footer", footer_column: RECORD_COUNT }
+  - { type: footer_sum_matches_body,   name: "Suma de montos del footer",      footer_column: SUM_AMOUNT, body_column: AMOUNT }

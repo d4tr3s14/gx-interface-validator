@@ -1,12 +1,16 @@
 """
-Parser de archivos de ancho fijo (fixed-width) guiado por un layout YAML.
+Parsers de interfaces guiados por un layout YAML.
 
-Convierte un archivo plano `.FC` en tres DataFrames (header / body / footer),
-preservando los valores como texto para no perder ceros a la izquierda ni
-espacios significativos (p. ej. "FY2025   ").
+Dos formatos soportados (según `format` en el layout):
+  * fixed_width  -> ancho fijo por posiciones (start/length)        [por defecto]
+  * delimited    -> delimitado por un separador (",", ";", "|", "\\t", ...)
+
+Ambos producen lo mismo: tres DataFrames (header / body / footer), con los
+valores como texto para no perder ceros a la izquierda ni espacios.
 """
 from __future__ import annotations
 
+import csv
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -111,7 +115,70 @@ class FixedWidthParser:
         )
 
 
+def _column_names(columns: list) -> list[str]:
+    """Nombres de columna: acepta lista de strings o de dicts {name,...}."""
+    return [c if isinstance(c, str) else c["name"] for c in columns]
+
+
+_DELIMITER_ALIASES = {"\\t": "\t", "tab": "\t", "TAB": "\t"}
+
+
+class DelimitedParser:
+    """Parsea archivos delimitados (CSV-like) según un layout de interfaz."""
+
+    def __init__(self, layout: dict):
+        self.layout = layout
+        self.interface = layout.get("interface", "UNKNOWN")
+        self.record_types = layout["record_types"]
+        delim = layout.get("delimiter", ",")
+        self.delimiter = _DELIMITER_ALIASES.get(delim, delim)
+
+    def _matches_marker(self, fields: list[str], section: str) -> bool:
+        marker = self.record_types.get(section, {}).get("marker")
+        if not marker:
+            return False
+        idx = marker["field"]
+        return len(fields) > idx and fields[idx].strip() == marker["value"]
+
+    def classify(self, fields: list[str]) -> Optional[str]:
+        for section in ("header", "footer"):
+            if self._matches_marker(fields, section):
+                return section
+        return "body" if "body" in self.record_types else None
+
+    def parse_file(self, fc_path: str | Path) -> ParsedInterface:
+        fc_path = Path(fc_path)
+        buckets: dict[str, list[dict]] = {s: [] for s in SECTIONS}
+
+        with open(fc_path, "r", encoding="latin-1", newline="") as f:
+            for fields in csv.reader(f, delimiter=self.delimiter):
+                if not fields:
+                    continue
+                section = self.classify(fields)
+                if section is None:
+                    continue
+                names = _column_names(self.record_types[section]["columns"])
+                buckets[section].append(
+                    {name: (fields[i] if i < len(fields) else "") for i, name in enumerate(names)}
+                )
+
+        sections: dict[str, pd.DataFrame] = {}
+        for section, rows in buckets.items():
+            names = _column_names(self.record_types.get(section, {}).get("columns", []))
+            sections[section] = pd.DataFrame(rows, columns=names, dtype="string")
+
+        return ParsedInterface(interface=self.interface, file_name=fc_path.name, sections=sections)
+
+
+def make_parser(layout: dict):
+    """Devuelve el parser adecuado según el formato del layout."""
+    fmt = layout.get("format", "fixed_width")
+    if fmt == "delimited" or layout.get("delimiter"):
+        return DelimitedParser(layout)
+    return FixedWidthParser(layout)
+
+
 def parse_interface(fc_path: str | Path, layout_name: str) -> ParsedInterface:
     """Atajo: carga el layout por nombre y parsea el archivo."""
     layout = load_layout(layout_name)
-    return FixedWidthParser(layout).parse_file(fc_path)
+    return make_parser(layout).parse_file(fc_path)

@@ -18,7 +18,7 @@ from . import config
 from .consolidator import consolidate, write_consolidated
 from .engine import run_section
 from .engine.cross_section import run_cross_section
-from .parser import FixedWidthParser, ParsedInterface, load_layout
+from .parser import ParsedInterface, load_layout, make_parser
 
 _DATE_RE = re.compile(r"_F(\d{8})")
 
@@ -84,7 +84,7 @@ def parse_and_validate(
     started = datetime.now(timezone.utc)
     t0 = time.perf_counter()
 
-    parsed = FixedWidthParser(layout).parse_file(fc_path)
+    parsed = make_parser(layout).parse_file(fc_path)
     document = validate_parsed(
         parsed,
         interface_date=extract_date(fc_path.name),
