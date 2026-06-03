@@ -166,9 +166,35 @@ def generate_sample02(date: str = "20250404", n: int = 10) -> None:
     write_interface(DATA_DIR / f"SAMPLE02_F{date}.FC", header, body, footer)
 
 
+# --------------------------------------------------------------------------- #
+# SAMPLE04 — Interfaz DELIMITADA por comas (CSV), no de ancho fijo.
+# --------------------------------------------------------------------------- #
+def generate_sample04(date: str = "20250404", n: int = 12) -> None:
+    rows = []
+    for i in range(1, n + 1):
+        rows.append({
+            "txn_id": i,
+            "account": f"ACC{i:04d}",
+            "currency": random.choice(CURRENCIES),
+            "amount": random.randint(1_000, 5_000_000),
+            "status": random.choice(["A", "I"]),
+        })
+    lines = ["HDR,SMP," + date]
+    for r in rows:
+        lines.append(f"{r['txn_id']},{r['account']},{r['currency']},{r['amount']},{r['status']}")
+    lines.append(f"EOF,{len(rows)},{sum(r['amount'] for r in rows)}")
+
+    path = DATA_DIR / f"SAMPLE04_F{date}.FC"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="latin-1", newline="\n") as f:
+        f.write("\n".join(lines) + "\n")
+    print(f"  escrito: {path.name}  ({len(rows)} filas, delimitado por ',')")
+
+
 if __name__ == "__main__":
     print("Generando interfaces sintéticas en data/sample/ ...")
     generate_valid()
     generate_broken()
     generate_sample02()
+    generate_sample04()
     print("Listo.")

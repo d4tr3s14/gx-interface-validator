@@ -10,13 +10,15 @@ from __future__ import annotations
 
 import json
 import re
+import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 from . import config
 from .consolidator import consolidate, write_consolidated
 from .engine import run_section
 from .engine.cross_section import run_cross_section
-from .parser import FixedWidthParser, ParsedInterface, load_layout
+from .parser import ParsedInterface, load_layout, make_parser
 
 _DATE_RE = re.compile(r"_F(\d{8})")
 
@@ -78,13 +80,25 @@ def parse_and_validate(
     """Parsea y valida una interfaz; devuelve (parsed, documento_consolidado)."""
     fc_path = Path(fc_path)
     layout = load_layout(layout_name)
-    parsed = FixedWidthParser(layout).parse_file(fc_path)
+
+    started = datetime.now(timezone.utc)
+    t0 = time.perf_counter()
+
+    parsed = make_parser(layout).parse_file(fc_path)
     document = validate_parsed(
         parsed,
         interface_date=extract_date(fc_path.name),
         expectations_dir=expectations_dir,
         business_rules=layout.get("business_rules", []),
     )
+
+    finished = datetime.now(timezone.utc)
+    # Metadatos de ejecución (para la persistencia en BD).
+    document["layout"] = layout_name
+    document["started_at"] = started.isoformat()
+    document["finished_at"] = finished.isoformat()
+    document["duration_ms"] = int((time.perf_counter() - t0) * 1000)
+
     return parsed, document
 
 

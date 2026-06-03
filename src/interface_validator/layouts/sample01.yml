@@ -15,6 +15,10 @@
 interface: SAMPLE01
 description: Interfaz sintética de movimientos contables (datos 100% ficticios).
 
+# Columnas clave para la comparación "por ID" (modo by_id). Se aplican al body;
+# se pueden sobreescribir desde el CLI con --keys.
+key_columns: [ENTRY_ID]
+
 record_types:
 
   header:

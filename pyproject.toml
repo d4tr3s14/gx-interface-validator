@@ -29,9 +29,19 @@ test = [
 report = [
     "weasyprint>=60",
 ]
+# Persistencia de resultados en PostgreSQL.
+db = [
+    "psycopg[binary]>=3.1",
+]
+# Autoconfiguración de Metabase (script de reportería).
+viz = [
+    "requests>=2.31",
+]
 
 [project.scripts]
 validate-interface = "interface_validator.cli:main"
+compare-interfaces = "interface_validator.compare_cli:main"
+iv-catalog = "interface_validator.catalog_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
