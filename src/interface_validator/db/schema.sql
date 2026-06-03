@@ -215,3 +215,36 @@ SELECT
 FROM bridge_project_interface b
 JOIN dim_project   p ON p.project_id   = b.project_id
 JOIN dim_interface i ON i.interface_id = b.interface_id;
+
+-- Dashboard consolidado por proyecto: validaciones y comparaciones, tasa de
+-- éxito y duración promedio. Una fila por proyecto (ideal para BI).
+CREATE OR REPLACE VIEW vw_project_dashboard AS
+SELECT
+    p.project_key,
+    p.name AS project_name,
+    (SELECT COUNT(*)                       FROM fact_run r WHERE r.project_id = p.project_id) AS validaciones,
+    (SELECT COUNT(DISTINCT r.interface_id) FROM fact_run r WHERE r.project_id = p.project_id) AS interfaces_validadas,
+    (SELECT COUNT(*)                       FROM fact_run r WHERE r.project_id = p.project_id AND r.success) AS validaciones_ok,
+    (SELECT ROUND(AVG(r.success_percent)::numeric, 2) FROM fact_run r WHERE r.project_id = p.project_id) AS pct_exito_promedio,
+    (SELECT ROUND(AVG(r.duration_ms)::numeric, 0)     FROM fact_run r WHERE r.project_id = p.project_id) AS duracion_promedio_ms,
+    (SELECT COUNT(*)                       FROM fact_comparison_run c WHERE c.project_id = p.project_id) AS comparaciones,
+    (SELECT COUNT(DISTINCT c.interface_id) FROM fact_comparison_run c WHERE c.project_id = p.project_id) AS interfaces_comparadas
+FROM dim_project p;
+
+-- Errores más comunes: expectativas fallidas agrupadas por categoría/tipo/columna,
+-- con su proyecto. Ordenadas por frecuencia (top de fallos).
+CREATE OR REPLACE VIEW vw_top_errors AS
+SELECT
+    p.project_key,
+    e.category,
+    e.expectation_type,
+    e.column_name,
+    COUNT(*)                          AS ocurrencias,
+    SUM(COALESCE(e.unexpected_count, 0)) AS datos_afectados
+FROM fact_expectation e
+JOIN fact_section s ON s.section_id = e.section_id
+JOIN fact_run     r ON r.run_id     = s.run_id
+JOIN dim_project  p ON p.project_id = r.project_id
+WHERE e.success = FALSE
+GROUP BY p.project_key, e.category, e.expectation_type, e.column_name
+ORDER BY ocurrencias DESC;
