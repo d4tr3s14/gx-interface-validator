@@ -187,3 +187,31 @@ FROM fact_comparison_run c
 JOIN dim_project   p ON p.project_id   = c.project_id
 JOIN dim_interface i ON i.interface_id = c.interface_id
 JOIN dim_user      u ON u.user_id      = c.user_id;
+
+-- ============================================================================
+-- REPORTERÍA: cobertura por proyecto y actividad por interfaz.
+-- ============================================================================
+
+-- Por proyecto: cuántas interfaces distintas se validaron (GE) y cuántas se
+-- compararon, más el total de ejecuciones de cada tipo.
+CREATE OR REPLACE VIEW vw_project_coverage AS
+SELECT
+    p.project_key,
+    p.name AS project_name,
+    (SELECT COUNT(DISTINCT r.interface_id) FROM fact_run r            WHERE r.project_id = p.project_id) AS interfaces_validadas,
+    (SELECT COUNT(DISTINCT c.interface_id) FROM fact_comparison_run c WHERE c.project_id = p.project_id) AS interfaces_comparadas,
+    (SELECT COUNT(*)                       FROM fact_run r            WHERE r.project_id = p.project_id) AS ejecuciones_validacion,
+    (SELECT COUNT(*)                       FROM fact_comparison_run c WHERE c.project_id = p.project_id) AS ejecuciones_comparacion
+FROM dim_project p;
+
+-- Por proyecto + interfaz: marca si tiene validación (expectativas) y/o
+-- comparación aplicadas. Permite filtrar "validada AND comparada", etc.
+CREATE OR REPLACE VIEW vw_interface_activity AS
+SELECT
+    p.project_key,
+    i.name AS interface,
+    EXISTS (SELECT 1 FROM fact_run r            WHERE r.project_id = b.project_id AND r.interface_id = b.interface_id) AS validada,
+    EXISTS (SELECT 1 FROM fact_comparison_run c WHERE c.project_id = b.project_id AND c.interface_id = b.interface_id) AS comparada
+FROM bridge_project_interface b
+JOIN dim_project   p ON p.project_id   = b.project_id
+JOIN dim_interface i ON i.interface_id = b.interface_id;
