@@ -1,0 +1,3 @@
+INFO     great_expectations.data_context.types.base:base.py:1401 Created temporary directory '/tmp/tmp5al2tp0j' for ephemeral docs site
+INFO     great_expectations.data_context.types.base:base.py:1401 Created temporary directory '/tmp/tmpt_e4u9b2' for ephemeral docs site
+INFO     great_expectations.data_context.types.base:base.py:1401 Created temporary directory '/tmp/tmp6t7_612n' for ephemeral docs site
