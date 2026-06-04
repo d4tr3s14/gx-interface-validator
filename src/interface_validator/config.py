@@ -13,3 +13,7 @@ OUTPUT_DIR = Path(os.getenv("IV_OUTPUT_DIR", PROJECT_ROOT / "output"))
 
 # Orden de secciones en los reportes
 SECTION_ORDER = ("header", "body", "footer", "cross_section")
+
+# URLs de las vistas técnicas/interactivas (enlazadas desde el informe de proyecto).
+METABASE_URL = os.getenv("METABASE_URL", "http://localhost:3000")
+ALLURE_URL = os.getenv("ALLURE_URL", "https://d4tr3s14.github.io/gx-interface-validator/")

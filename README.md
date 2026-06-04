@@ -261,6 +261,20 @@ validate-interface --file data/sample/SAMPLE01_F20250404.FC \
 |----------|---------|
 | `DATABASE_URL` | `postgresql://gx:gx@localhost:5432/gx` |
 
+## 🗂️ Informe consolidado por proyecto
+
+Genera un **informe formal por proyecto** (HTML + PDF) desde la base de datos,
+con KPIs, análisis de expectativas fallidas y errores de comparación, el detalle
+de cada interfaz **con enlace a su informe ejecutivo** (drill-down) y enlaces a
+las vistas interactivas (Metabase / Allure).
+
+```bash
+project-report --project RIESGO --format both          # consolidado + enlaces por interfaz
+project-report --project RIESGO --embed                # versión "todo-en-uno" (detalle embebido)
+```
+
+![Informe consolidado por proyecto](docs/project-report.png)
+
 ## 📊 Dashboards de reportería (Metabase)
 
 El stack incluye **Metabase** para visualizar la reportería sin escribir código,
