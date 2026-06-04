@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Informe de Validación - SAMPLE01</title>
+<style>
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --ink:#1e293b; --muted:#64748b;
+  --primary:#3b5bdb; --primary-dark:#1f3c88;
+  --ok:#15a34a; --ok-bg:#dcfce7; --bad:#dc2626; --bad-bg:#fee2e2;
+  --warn:#d97706; --warn-bg:#fef3c7; --border:#e6ebf2;
+}
+*{ box-sizing:border-box; }
+body{ font-family:'Segoe UI', system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  background:var(--bg); color:var(--ink); margin:0; font-size:10.5pt; line-height:1.5;
+  -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.container{ max-width:210mm; margin:0 auto; padding:22px; }
+
+/* Cabecera */
+.header{ background:linear-gradient(135deg,#1f3c88 0%,#3b5bdb 60%,#5b7cf0 100%); color:#fff;
+  border-radius:16px; padding:24px 26px; box-shadow:0 8px 22px rgba(31,60,136,.22); }
+.header .org{ font-size:9.5pt; opacity:.85; letter-spacing:.6px; text-transform:uppercase; }
+.header h1{ font-size:19pt; font-weight:700; margin:6px 0 2px; letter-spacing:.3px; }
+.header .sub{ font-size:9.5pt; opacity:.9; }
+.chip{ display:inline-block; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35);
+  padding:2px 10px; border-radius:999px; font-size:8.5pt; margin-left:6px; }
+
+/* Tarjetas / KPIs */
+.cards{ display:flex; gap:14px; flex-wrap:wrap; margin:18px 0; align-items:stretch; }
+.card{ background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px;
+  box-shadow:0 1px 3px rgba(15,23,42,.05); }
+.kpi{ flex:1; min-width:140px; display:flex; flex-direction:column; gap:2px; }
+.kpi .value{ font-size:23pt; font-weight:700; color:var(--primary-dark); line-height:1.05; }
+.kpi .label{ color:var(--muted); font-size:9pt; }
+.hero{ display:flex; gap:16px; align-items:center; margin:18px 0; flex-wrap:wrap; }
+
+/* Donut (conic-gradient) */
+.donut{ position:relative; width:104px; height:104px; border-radius:50%; flex:0 0 auto;
+  background:conic-gradient(var(--dcol,#15a34a) calc(var(--pct,0)*1%), #eef2f7 0); }
+.donut .hole{ position:absolute; inset:13px; background:var(--card); border-radius:50%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.donut .hole b{ font-size:16pt; color:var(--ink); }
+.donut .hole small{ color:var(--muted); font-size:7.5pt; }
+
+/* Títulos de sección */
+.section-title{ font-size:12.5pt; font-weight:700; color:var(--primary-dark); margin:26px 0 10px;
+  display:flex; align-items:center; gap:9px; }
+.section-title::before{ content:''; width:5px; height:18px; background:var(--primary); border-radius:3px; }
+
+/* Tablas */
+table{ width:100%; border-collapse:separate; border-spacing:0; font-size:9.5pt; background:var(--card);
+  border:1px solid var(--border); border-radius:12px; overflow:hidden; margin:6px 0 16px; }
+th{ background:#eef2f9; color:#334155; text-align:left; padding:9px 11px; font-weight:600;
+  border-bottom:1px solid var(--border); font-size:8.8pt; letter-spacing:.3px; text-transform:uppercase; }
+td{ padding:8px 11px; border-bottom:1px solid #eef2f7; vertical-align:top; }
+tr:last-child td{ border-bottom:none; }
+tbody tr:nth-child(even) td{ background:#fafbfe; }
+.center{ text-align:center; }
+
+/* Pills / estados */
+.pill{ display:inline-block; padding:3px 12px; border-radius:999px; font-weight:700; font-size:8.5pt; }
+.pill-ok{ color:var(--ok); background:var(--ok-bg); }
+.pill-bad{ color:var(--bad); background:var(--bad-bg); }
+
+/* Barras */
+.bar{ background:#eef2f7; border-radius:999px; height:9px; overflow:hidden; display:flex; min-width:120px; }
+.bar .seg-ok{ background:var(--ok); height:100%; }
+.bar .seg-bad{ background:var(--bad); height:100%; }
+.bar-row{ display:flex; align-items:center; gap:12px; margin:7px 0; font-size:9.5pt; }
+.bar-label{ width:120px; font-weight:600; color:#334155; }
+.bar-count{ width:96px; text-align:right; color:var(--muted); font-size:8.8pt; }
+
+.found{ font-family:'Cascadia Code', Consolas, monospace; color:var(--bad); font-size:8.5pt; word-break:break-word; }
+.muted{ color:var(--muted); font-size:8.5pt; }
+.ok-text{ color:var(--ok); font-weight:600; }
+.note{ background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; padding:9px 13px; font-size:9pt; color:#075985; }
+.linkbar{ background:#eef2ff; border:1px solid #c7d2fe; border-radius:12px; padding:12px 16px; font-size:9.5pt; }
+.linkbar a{ color:var(--primary-dark); font-weight:600; text-decoration:none; }
+.metastrip{ display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
+.metastrip .m{ background:var(--card); border:1px solid var(--border); border-radius:10px; padding:8px 12px; font-size:8.8pt; }
+.metastrip .m b{ display:block; color:var(--muted); font-weight:600; font-size:7.8pt; text-transform:uppercase; letter-spacing:.4px; }
+@page{ size:A4; margin:1.4cm; @bottom-right{ content:counter(page) " / " counter(pages); font-size:8.5pt; color:#94a3b8; } }
+
+  .lines-table th{ text-transform:none; font-size:8pt; }
+  .lines-table td{ font-size:8pt; }
+  .passed-line td{ background:#f0fdf4 !important; }
+  .failed-line td{ background:#fef2f2 !important; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="org">Área de Calidad de Datos</div>
+    <h1>INFORME DE VALIDACIÓN DE INTERFACES</h1>
+    <div class="sub">SAMPLE01 · 20250404
+      <span class="chip">v1.0</span><span class="chip">Evidencia · vigencia 30 días</span></div>
+  </div>
+
+  <div class="hero">
+    <div class="donut" style="--pct:100.0; --dcol:#15a34a;">
+      <div class="hole"><b>100.0%</b><small>aprobación</small></div>
+    </div>
+    <div class="card kpi"><div class="value">8</div><div class="label">Registros</div></div>
+    <div class="card kpi"><div class="value">44</div><div class="label">Expectativas</div></div>
+    <div class="card kpi">
+      <div class="value"><span class="pill pill-ok">APROBADO</span></div>
+      <div class="label">Estado · SAMPLE01</div>
+    </div>
+  </div>
+
+  <div class="metastrip">
+    <div class="m"><b>Ambiente</b>QA</div>
+    <div class="m"><b>Fecha emisión</b>04/06/2026 21:27</div>
+    <div class="m"><b>Fecha interfaz</b>20250404</div>
+    <div class="m"><b>Responsable</b>Equipo QA</div>
+    <div class="m"><b>Certificación</b>PROYECTO</div>
+    <div class="m"><b>Proyecto</b>Proyecto de demostración - Validación de interfaces</div>
+  </div>
+
+  <div class="section-title">VALIDACIONES EXITOSAS POR CATEGORÍA</div>
+  <table>
+    <thead><tr><th>Categoría</th><th>Validación</th><th>Ejecuciones</th></tr></thead>
+    <tbody>
+    
+    <tr><td><b>Completitud</b></td><td>Columna presente</td><td class="center">3</td></tr>
+    
+    <tr><td><b>Completitud</b></td><td>Columnas con nombre correcto</td><td class="center">3</td></tr>
+    
+    <tr><td><b>Completitud</b></td><td>Sin valores nulos</td><td class="center">10</td></tr>
+    
+    <tr><td><b>Dominio</b></td><td>Valores dentro del conjunto permitido</td><td class="center">12</td></tr>
+    
+    <tr><td><b>Formato</b></td><td>Largo de campo correcto</td><td class="center">2</td></tr>
+    
+    <tr><td><b>Formato</b></td><td>Solo caracteres numéricos</td><td class="center">8</td></tr>
+    
+    <tr><td><b>Unicidad</b></td><td>Sin registros duplicados</td><td class="center">2</td></tr>
+    
+    <tr><td><b>Unicidad</b></td><td>Valores únicos (sin duplicados)</td><td class="center">1</td></tr>
+    
+    <tr><td><b>Negocio</b></td><td>Conteo de registros del footer</td><td class="center">1</td></tr>
+    
+    <tr><td><b>Negocio</b></td><td>Total de créditos del footer</td><td class="center">1</td></tr>
+    
+    <tr><td><b>Negocio</b></td><td>Total de débitos del footer</td><td class="center">1</td></tr>
+    
+    </tbody>
+  </table>
+
+  <div class="section-title">Resumen gráfico por categoría</div>
+  <div class="card">
+    
+    <div class="bar-row">
+      <div class="bar-label">Completitud</div>
+      <div class="bar">
+        <div class="seg-ok" style="width: 100%"></div>
+        <div class="seg-bad" style="width: 0%"></div>
+      </div>
+      <div class="bar-count">16 OK · 0 ✗</div>
+    </div>
+    
+    <div class="bar-row">
+      <div class="bar-label">Dominio</div>
+      <div class="bar">
+        <div class="seg-ok" style="width: 100%"></div>
+        <div class="seg-bad" style="width: 0%"></div>
+      </div>
+      <div class="bar-count">12 OK · 0 ✗</div>
+    </div>
+    
+    <div class="bar-row">
+      <div class="bar-label">Formato</div>
+      <div class="bar">
+        <div class="seg-ok" style="width: 100%"></div>
+        <div class="seg-bad" style="width: 0%"></div>
+      </div>
+      <div class="bar-count">10 OK · 0 ✗</div>
+    </div>
+    
+    <div class="bar-row">
+      <div class="bar-label">Unicidad</div>
+      <div class="bar">
+        <div class="seg-ok" style="width: 100%"></div>
+        <div class="seg-bad" style="width: 0%"></div>
+      </div>
+      <div class="bar-count">3 OK · 0 ✗</div>
+    </div>
+    
+    <div class="bar-row">
+      <div class="bar-label">Negocio</div>
+      <div class="bar">
+        <div class="seg-ok" style="width: 100%"></div>
+        <div class="seg-bad" style="width: 0%"></div>
+      </div>
+      <div class="bar-count">3 OK · 0 ✗</div>
+    </div>
+    
+  </div>
+
+  <div class="section-title">Clasificación por tipo de error</div>
+  
+  <div class="note ok-text">✓ No se detectaron errores. La interfaz cumple todas las expectativas.</div>
+  
+
+  
+
+  
+  <div class="section-title">Detalle de líneas · HEADER</div>
+  <div class="note">
+    Total de líneas: <b>1</b> ·
+    <span class="ok-text">correctas: 1</span> ·
+    <span style="color:#dc2626">con observación: 0</span>
+    
+  </div>
+  <div style="overflow-x:auto;">
+  <table class="lines-table">
+    <thead><tr><th>Nº</th><th>REC_TYPE</th><th>SYSTEM_CODE</th><th>FILE_CODE</th><th>PROCESS_DATE</th><th>PROCESS_TYPE</th><th>FILLER_H</th></tr></thead>
+    <tbody>
+    
+    <tr class="passed-line">
+      <td>1</td><td>HDR</td><td>SMP</td><td>ACC</td><td>20250404</td><td>D</td><td>0000000000000000000000000000000000000000</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <div class="section-title">Detalle de líneas · BODY</div>
+  <div class="note">
+    Total de líneas: <b>8</b> ·
+    <span class="ok-text">correctas: 8</span> ·
+    <span style="color:#dc2626">con observación: 0</span>
+    
+  </div>
+  <div style="overflow-x:auto;">
+  <table class="lines-table">
+    <thead><tr><th>Nº</th><th>ENTRY_ID</th><th>FISCAL_PERIOD</th><th>PROCESS_MONTH</th><th>OFFICE_CODE</th><th>CURRENCY_CODE</th><th>AMOUNT_LOCAL</th><th>DECIMALS</th><th>ACCOUNT</th><th>TXN_CODE</th><th>DRCR</th><th>ACCOUNTING_DATE</th><th>FILLER_B</th></tr></thead>
+    <tbody>
+    
+    <tr class="passed-line">
+      <td>1</td><td>0000000000000001</td><td>FY2025   </td><td>APR</td><td>505</td><td>999</td><td>0000000000000934912</td><td>000</td><td>00000000000000000000</td><td>DLY</td><td>D</td><td>20250404</td><td>0000000000000000000000000000000000000000</td>
+    </tr>
+    
+    <tr class="passed-line">
+      <td>2</td><td>0000000000000002</td><td>FY2025   </td><td>APR</td><td>505</td><td>999</td><td>0000000000002308113</td><td>000</td><td>00000000000000000000</td><td>DLY</td><td>D</td><td>20250404</td><td>0000000000000000000000000000000000000000</td>
+    </tr>
+    
+    <tr class="passed-line">
+      <td>3</td><td>0000000000000003</td><td>FY2025   </td><td>APR</td><td>505</td><td>999</td><td>0000000000001873427</td><td>000</td><td>00000000000000000000</td><td>DLY</td><td>D</td><td>20250404</td><td>0000000000000000000000000000000000000000</td>
+    </tr>
+    
+    <tr class="passed-line">
+      <td>4</td><td>0000000000000004</td><td>FY2025   </td><td>APR</td><td>505</td><td>999</td><td>0000000000000860791</td><td>000</td><td>00000000000000000000</td><td>DLY</td><td>D</td><td>20250404</td><td>0000000000000000000000000000000000000000</td>
+    </tr>
+    
+    <tr class="passed-line">
+      <td>5</td><td>0000000000000005</td><td>FY2025   </td><td>APR</td><td>505</td><td>999</td><td>0000000000004954410</td><td>000</td><td>00000000000000000000</td><td>DLY</td><td>C</td><td>20250404</td><td>0000000000000000000000000000000000000000</td>
+    </tr>
+    
+    <tr class="passed-line">
+      <td>6</td><td>0000000000000006</td><td>FY2025   </td><td>APR</td><td>505</td><td>999</td><td>0000000000000267612</td><td>000</td><td>00000000000000000000</td><td>DLY</td><td>D</td><td>20250404</td><td>0000000000000000000000000000000000000000</td>
+    </tr>
+    
+    <tr class="passed-line">
+      <td>7</td><td>0000000000000007</td><td>FY2025   </td><td>APR</td><td>505</td><td>999</td><td>0000000000000786972</td><td>000</td><td>00000000000000000000</td><td>DLY</td><td>D</td><td>20250404</td><td>0000000000000000000000000000000000000000</td>
+    </tr>
+    
+    <tr class="passed-line">
+      <td>8</td><td>0000000000000008</td><td>FY2025   </td><td>APR</td><td>505</td><td>999</td><td>0000000000001952701</td><td>000</td><td>00000000000000000000</td><td>DLY</td><td>D</td><td>20250404</td><td>0000000000000000000000000000000000000000</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <div class="section-title">Detalle de líneas · FOOTER</div>
+  <div class="note">
+    Total de líneas: <b>1</b> ·
+    <span class="ok-text">correctas: 1</span> ·
+    <span style="color:#dc2626">con observación: 0</span>
+    
+  </div>
+  <div style="overflow-x:auto;">
+  <table class="lines-table">
+    <thead><tr><th>Nº</th><th>REC_TYPE</th><th>RECORD_COUNT</th><th>SUM_AMOUNT_DR</th><th>SUM_AMOUNT_CR</th><th>FILLER_F</th></tr></thead>
+    <tbody>
+    
+    <tr class="passed-line">
+      <td>1</td><td>TLR</td><td>0000000000008</td><td>00000000008984528</td><td>00000000004954410</td><td>0000000000000000000000000000000000000000</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+
+  <p class="muted" style="margin-top:24px; text-align:center;">
+    Generado automáticamente por gx-interface-validator · 04/06/2026 21:27 · Datos de ejemplo ficticios.
+  </p>
+
+</div>
+</body>
+</html>
