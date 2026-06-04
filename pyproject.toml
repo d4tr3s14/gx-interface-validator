@@ -42,6 +42,7 @@ viz = [
 validate-interface = "interface_validator.cli:main"
 compare-interfaces = "interface_validator.compare_cli:main"
 iv-catalog = "interface_validator.catalog_cli:main"
+project-report = "interface_validator.project_report_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

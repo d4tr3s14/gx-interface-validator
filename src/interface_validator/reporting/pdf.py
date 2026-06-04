@@ -85,7 +85,8 @@ def _try_chromium(html: str, out_path: Path) -> tuple[bool, str]:
 
 def html_to_pdf(html: str, out_path: str | Path) -> tuple[bool, str]:
     """Convierte HTML a PDF probando los backends disponibles."""
-    out_path = Path(out_path)
+    # Ruta absoluta: Chromium escribe --print-to-pdf relativo a su CWD.
+    out_path = Path(out_path).resolve()
     errors = []
     for backend in (_try_weasyprint, _try_chromium):
         ok, info = backend(html, out_path)
