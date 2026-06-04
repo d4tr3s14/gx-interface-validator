@@ -35,21 +35,35 @@ PG = {
     "password": os.getenv("MB_PG_PASSWORD", "gx"),
 }
 
+# URL del servidor de informes (servicio nginx 'reports') para el panel de enlace.
+REPORTS_URL = os.getenv("REPORTS_URL", "http://localhost:8080")
+
 CARDS = [
+    {  # KPI grande
+        "name": "Interfaces validadas (total)",
+        "sql": "SELECT COUNT(DISTINCT interface_id) AS interfaces FROM fact_run",
+        "display": "scalar",
+    },
+    {  # KPI grande
+        "name": "% de éxito promedio",
+        "sql": "SELECT ROUND(AVG(success_percent)::numeric, 1) AS pct FROM fact_run",
+        "display": "scalar",
+    },
+    {  # KPI grande
+        "name": "Comparaciones (total)",
+        "sql": "SELECT COUNT(*) AS comparaciones FROM fact_comparison_run",
+        "display": "scalar",
+    },
     {
         "name": "Validaciones y comparaciones por proyecto",
         "sql": "SELECT project_key, validaciones, comparaciones FROM vw_project_dashboard ORDER BY validaciones DESC",
         "display": "bar",
     },
     {
-        "name": "% de éxito promedio por proyecto",
-        "sql": "SELECT project_key, pct_exito_promedio FROM vw_project_dashboard WHERE pct_exito_promedio IS NOT NULL ORDER BY pct_exito_promedio DESC",
-        "display": "bar",
-    },
-    {
         "name": "Errores más comunes",
-        "sql": "SELECT category, column_name, ocurrencias, datos_afectados FROM vw_top_errors LIMIT 10",
-        "display": "table",
+        "sql": "SELECT category || ' · ' || COALESCE(column_name, '—') AS error, ocurrencias "
+               "FROM vw_top_errors LIMIT 8",
+        "display": "row",
     },
     {
         "name": "Actividad por interfaz",
@@ -96,10 +110,12 @@ def get_session() -> str:
             },
         }
         r = requests.post(f"{MB}/api/setup", json=payload, timeout=60)
-        r.raise_for_status()
-        return r.json()["id"]
+        if r.ok:
+            return r.json()["id"]
+        # Token obsoleto / ya configurado -> caer a login.
+        print("Setup no aplicable (ya configurado); iniciando sesión...")
 
-    print("Metabase ya configurado; iniciando sesión...")
+    print("Iniciando sesión en Metabase...")
     r = requests.post(f"{MB}/api/session", json={"username": EMAIL, "password": PASSWORD}, timeout=30)
     r.raise_for_status()
     return r.json()["id"]
@@ -136,21 +152,50 @@ def create_card(headers: dict, db_id: int, card: dict) -> int:
     return r.json()["id"]
 
 
+def _text_card(neg_id: int, text: str, row: int, col: int, w: int, h: int) -> dict:
+    """Tarjeta de texto (markdown) virtual para el dashboard."""
+    return {
+        "id": neg_id, "card_id": None, "row": row, "col": col, "size_x": w, "size_y": h,
+        "parameter_mappings": [],
+        "visualization_settings": {
+            "virtual_card": {"name": None, "display": "text",
+                             "visualization_settings": {}, "dataset_query": {}, "archived": False},
+            "text": text, "text.align_vertical": "middle",
+        },
+    }
+
+
 def create_dashboard(headers: dict, card_ids: list[int]) -> int:
     r = requests.post(f"{MB}/api/dashboard", headers=headers, timeout=30,
                       json={"name": "GX — Reportería de validaciones"})
     r.raise_for_status()
     dash_id = r.json()["id"]
 
-    # Distribución 2x2 (grilla de 18 columnas de Metabase).
-    layout = [(0, 0), (9, 0), (0, 7), (9, 7)]
-    dashcards = []
-    for (col, row), card_id in zip(layout, card_ids):
-        dashcards.append({
-            "id": -(card_id), "card_id": card_id,
-            "row": row, "col": col, "size_x": 9, "size_y": 7,
-            "parameter_mappings": [], "visualization_settings": {},
-        })
+    # card_ids en orden de CARDS:
+    #   0,1,2 = scalars · 3 = barras por proyecto · 4 = errores (row) · 5 = actividad (tabla)
+    grid = [
+        (card_ids[0], 3, 0, 6, 3),    # scalar interfaces validadas
+        (card_ids[1], 3, 6, 6, 3),    # scalar % éxito
+        (card_ids[2], 3, 12, 6, 3),   # scalar comparaciones
+        (card_ids[3], 6, 0, 9, 7),    # barras por proyecto
+        (card_ids[4], 6, 9, 9, 7),    # errores más comunes (row)
+        (card_ids[5], 13, 0, 18, 7),  # actividad por interfaz (tabla)
+    ]
+    dashcards = [
+        {"id": -(cid), "card_id": cid, "row": r0, "col": c0, "size_x": w, "size_y": h,
+         "parameter_mappings": [], "visualization_settings": {}}
+        for (cid, r0, c0, w, h) in grid
+    ]
+    # Panel de texto superior con el enlace de descarga del informe consolidado.
+    dashcards.append(_text_card(
+        -9001,
+        "### 📄 Informe consolidado por proyecto\n"
+        "Genera el informe formal (HTML/PDF) con `project-report --project <KEY>` y "
+        f"descárgalo desde el **[servidor de informes]({REPORTS_URL}/)** "
+        f"(ej.: [Informe_Proyecto_RIESGO]({REPORTS_URL}/Informe_Proyecto_RIESGO.html)).",
+        row=0, col=0, w=18, h=3,
+    ))
+
     r = requests.put(f"{MB}/api/dashboard/{dash_id}", headers=headers, timeout=60,
                      json={"dashcards": dashcards})
     r.raise_for_status()

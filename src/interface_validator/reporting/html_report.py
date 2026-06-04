@@ -18,6 +18,7 @@ from pathlib import Path
 from jinja2 import Template
 
 from . import taxonomy
+from .styles import REPORT_CSS
 
 MAX_BODY_SAMPLE = 50
 
@@ -153,40 +154,11 @@ _TEMPLATE = Template(r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <title>Informe de Validación - {{ interface }}</title>
-<style>
-  @page { size: A4; margin: 1.6cm; @bottom-right { content: counter(page) " / " counter(pages); font-size: 9pt; } }
-  body { font-family: 'Segoe UI', Calibri, sans-serif; color: #2b2b2b; font-size: 10.5pt; line-height: 1.45; margin: 0; }
-  .container { max-width: 200mm; margin: 0 auto; padding: 16px; }
-  .header { text-align: center; color: #fff; padding: 18px; border-radius: 6px;
-            background: linear-gradient(135deg, #1f3c88, #4F81BD); box-shadow: 0 2px 6px rgba(0,0,0,.15); }
-  .header .org { font-size: 9.5pt; opacity: .9; letter-spacing: .5px; }
-  .header .title { font-size: 20pt; font-weight: 700; margin: 6px 0; }
-  .header .subtitle { display: flex; justify-content: space-between; font-size: 9pt; opacity: .9; }
-  table { width: 100%; border-collapse: collapse; margin: 10px 0 18px; font-size: 9.5pt; }
-  th { background: #4F81BD; color: #fff; padding: 7px; text-align: center; font-weight: 600; }
-  td { padding: 6px 7px; border: 0.5pt solid #d9d9d9; vertical-align: top; }
-  .center { text-align: center; }
-  .section-header { background: linear-gradient(to right, #1f3c88, #4F81BD); color: #fff;
-                    padding: 7px 12px; font-weight: 700; border-radius: 4px; margin: 22px 0 6px; font-size: 11pt; }
-  .badge { padding: 3px 12px; border-radius: 12px; font-weight: 700; font-size: 9pt; }
-  .badge-ok { color: #1b5e20; background: #E8F5E9; border: 1px solid #1b5e20; }
-  .badge-no { color: #b71c1c; background: #FFEBEE; border: 1px solid #b71c1c; }
-  .cat-table td:first-child { font-weight: 600; background: #f4f7fb; }
-  .chart .bar-row { display: flex; align-items: center; margin: 5px 0; font-size: 9.5pt; }
-  .chart .bar-label { width: 110px; font-weight: 600; }
-  .chart .bar { flex: 1; height: 18px; background: #eee; border-radius: 9px; overflow: hidden; display: flex; }
-  .chart .bar .ok { background: #43a047; height: 100%; }
-  .chart .bar .fail { background: #e53935; height: 100%; }
-  .chart .bar-count { width: 90px; text-align: right; color: #555; }
-  .lines-table { font-size: 8pt; }
-  .lines-table th { background: #4F81BD; }
-  .passed-line td { background: #E8F5E9; }
-  .failed-line td { background: #FFEBEE; }
-  .stats { background: #f4f7fb; border-left: 4px solid #4F81BD; padding: 6px 12px; font-size: 9pt; margin: 6px 0; }
-  .stats span { margin-right: 18px; }
-  .muted { color: #888; font-size: 8.5pt; }
-  .ok-text { color: #1b5e20; font-weight: 600; }
-  .failed-table .found { font-family: Consolas, monospace; color: #b71c1c; font-size: 8.5pt; word-break: break-word; }
+<style>{{ css }}
+  .lines-table th{ text-transform:none; font-size:8pt; }
+  .lines-table td{ font-size:8pt; }
+  .passed-line td{ background:#f0fdf4 !important; }
+  .failed-line td{ background:#fef2f2 !important; }
 </style>
 </head>
 <body>
@@ -194,108 +166,106 @@ _TEMPLATE = Template(r"""<!DOCTYPE html>
 
   <div class="header">
     <div class="org">{{ meta.organization }}</div>
-    <div class="title">INFORME DE VALIDACIÓN DE INTERFACES</div>
-    <div class="subtitle"><span>Versión 1.0</span><span>Documento de evidencia · Vigencia 30 días</span></div>
+    <h1>INFORME DE VALIDACIÓN DE INTERFACES</h1>
+    <div class="sub">{{ interface }} · {{ interface_date }}
+      <span class="chip">v1.0</span><span class="chip">Evidencia · vigencia 30 días</span></div>
   </div>
 
-  <table>
-    <tr><th>SISTEMA</th><th>INTERFAZ</th><th>TOTAL REGISTROS</th><th>TOTAL EXPECTATIVAS</th><th>TASA DE APROBACIÓN</th><th>ESTADO</th></tr>
-    <tr>
-      <td class="center">{{ meta.system }}</td>
-      <td class="center">{{ interface }}</td>
-      <td class="center">{{ record_count }}</td>
-      <td class="center">{{ total_expectations }}</td>
-      <td class="center">{{ success_percent }}%</td>
-      <td class="center">
-        {% if approved %}<span class="badge badge-ok">APROBADO</span>
-        {% else %}<span class="badge badge-no">RECHAZADO</span>{% endif %}
-      </td>
-    </tr>
-  </table>
+  <div class="hero">
+    <div class="donut" style="--pct:{{ success_percent }}; --dcol:{{ '#15a34a' if approved else '#dc2626' }};">
+      <div class="hole"><b>{{ success_percent }}%</b><small>aprobación</small></div>
+    </div>
+    <div class="card kpi"><div class="value">{{ record_count }}</div><div class="label">Registros</div></div>
+    <div class="card kpi"><div class="value">{{ total_expectations }}</div><div class="label">Expectativas</div></div>
+    <div class="card kpi">
+      <div class="value">{% if approved %}<span class="pill pill-ok">APROBADO</span>{% else %}<span class="pill pill-bad">RECHAZADO</span>{% endif %}</div>
+      <div class="label">Estado · {{ meta.system }}</div>
+    </div>
+  </div>
 
-  <table>
-    <tr><th>AMBIENTE</th><th>FECHA EMISIÓN</th><th>FECHA INTERFAZ</th><th>RESPONSABLE</th><th>TIPO CERTIFICACIÓN</th><th>INFORME</th></tr>
-    <tr>
-      <td class="center">{{ meta.environment }}</td>
-      <td class="center">{{ generated_at }}</td>
-      <td class="center">{{ interface_date }}</td>
-      <td class="center">{{ meta.responsible }}</td>
-      <td class="center">{{ meta.certification_type }}</td>
-      <td class="center">Automático</td>
-    </tr>
-  </table>
+  <div class="metastrip">
+    <div class="m"><b>Ambiente</b>{{ meta.environment }}</div>
+    <div class="m"><b>Fecha emisión</b>{{ generated_at }}</div>
+    <div class="m"><b>Fecha interfaz</b>{{ interface_date }}</div>
+    <div class="m"><b>Responsable</b>{{ meta.responsible }}</div>
+    <div class="m"><b>Certificación</b>{{ meta.certification_type }}</div>
+    <div class="m"><b>Proyecto</b>{{ meta.project }}</div>
+  </div>
 
+  <div class="section-title">VALIDACIONES EXITOSAS POR CATEGORÍA</div>
   <table>
-    <tr><th colspan="6">PROYECTO ASOCIADO</th></tr>
-    <tr><td colspan="6" class="center">{{ meta.project }}</td></tr>
-  </table>
-
-  <div class="section-header">VALIDACIONES EXITOSAS POR CATEGORÍA</div>
-  <table class="cat-table">
-    <tr><th>CATEGORÍA</th><th>VALIDACIÓN</th><th>EJECUCIONES</th></tr>
+    <thead><tr><th>Categoría</th><th>Validación</th><th>Ejecuciones</th></tr></thead>
+    <tbody>
     {% for row in success_rows %}
-    <tr><td>{{ row.category }}</td><td>{{ row.subtype }}</td><td class="center">{{ row.count }}</td></tr>
+    <tr><td><b>{{ row.category }}</b></td><td>{{ row.subtype }}</td><td class="center">{{ row.count }}</td></tr>
     {% endfor %}
+    </tbody>
   </table>
 
-  <div class="section-header">RESUMEN GRÁFICO POR CATEGORÍA</div>
-  <div class="chart">
+  <div class="section-title">Resumen gráfico por categoría</div>
+  <div class="card">
     {% for c in chart_rows %}
     <div class="bar-row">
       <div class="bar-label">{{ c.category }}</div>
       <div class="bar">
-        <div class="ok" style="width: {{ c.ok_pct }}%"></div>
-        <div class="fail" style="width: {{ c.fail_pct }}%"></div>
+        <div class="seg-ok" style="width: {{ c.ok_pct }}%"></div>
+        <div class="seg-bad" style="width: {{ c.fail_pct }}%"></div>
       </div>
-      <div class="bar-count">{{ c.ok }} OK / {{ c.fail }} ✗</div>
+      <div class="bar-count">{{ c.ok }} OK · {{ c.fail }} ✗</div>
     </div>
     {% endfor %}
   </div>
 
-  <div class="section-header">CLASIFICACIÓN POR TIPO DE ERROR</div>
+  <div class="section-title">Clasificación por tipo de error</div>
   {% if error_rows %}
   <table>
-    <tr><th>CATEGORÍA</th><th>VALIDACIÓN</th><th>OCURRENCIAS</th><th>% DEL TOTAL</th><th>DATOS AFECTADOS</th></tr>
+    <thead><tr><th>Categoría</th><th>Validación</th><th>Ocurrencias</th><th>% del total</th><th>Datos afectados</th></tr></thead>
+    <tbody>
     {% for row in error_rows %}
-    <tr><td>{{ row.category }}</td><td>{{ row.subtype }}</td><td class="center">{{ row.count }}</td>
+    <tr><td><b>{{ row.category }}</b></td><td>{{ row.subtype }}</td><td class="center">{{ row.count }}</td>
         <td class="center">{{ row.pct }}%</td><td class="center">{{ row.affected }}</td></tr>
     {% endfor %}
+    </tbody>
   </table>
   {% else %}
-  <p class="ok-text">✓ No se detectaron errores. La interfaz cumple todas las expectativas.</p>
+  <div class="note ok-text">✓ No se detectaron errores. La interfaz cumple todas las expectativas.</div>
   {% endif %}
 
   {% if failed_details %}
-  <div class="section-header">DETALLE DE EXPECTATIVAS FALLIDAS</div>
-  <table class="failed-table">
-    <tr><th>VALIDACIÓN</th><th>COLUMNA</th><th>VALOR ESPERADO</th>
-        <th>VALOR(ES) ENCONTRADO(S)</th><th>LÍNEA(S)</th><th>SECCIÓN</th><th>AFECTADOS</th></tr>
+  <div class="section-title">Detalle de expectativas fallidas</div>
+  <table>
+    <thead><tr><th>Validación</th><th>Columna</th><th>Valor esperado</th>
+        <th>Valor(es) encontrado(s)</th><th>Línea(s)</th><th>Sección</th><th>Afectados</th></tr></thead>
+    <tbody>
     {% for d in failed_details %}
     <tr><td>{{ d.subtype }}</td><td>{{ d.column }}</td><td>{{ d.expected }}</td>
         <td class="found">{{ d.found }}</td>
         <td class="center">{{ d.lines }}</td>
         <td class="center">{{ d.section }}</td><td class="center">{{ d.errors }}</td></tr>
     {% endfor %}
+    </tbody>
   </table>
   <p class="muted">«Valor(es) encontrado(s)» y «Línea(s)» muestran hasta 8 ejemplos del dato exacto que provocó el rechazo.</p>
   {% endif %}
 
   {% for ls in line_sections %}
-  <div class="section-header">DETALLE DE LÍNEAS · {{ ls.section }}</div>
-  <div class="stats">
-    <span>Total de líneas: <b>{{ ls.total }}</b></span>
-    <span class="ok-text">Correctas: {{ ls.passed }}</span>
-    <span style="color:#b71c1c">Con observación: {{ ls.failed }}</span>
-    {% if ls.sampled %}<span class="muted">(muestra de las primeras {{ ls.rows|length }})</span>{% endif %}
+  <div class="section-title">Detalle de líneas · {{ ls.section }}</div>
+  <div class="note">
+    Total de líneas: <b>{{ ls.total }}</b> ·
+    <span class="ok-text">correctas: {{ ls.passed }}</span> ·
+    <span style="color:#dc2626">con observación: {{ ls.failed }}</span>
+    {% if ls.sampled %} · <span class="muted">(muestra de las primeras {{ ls.rows|length }})</span>{% endif %}
   </div>
   <div style="overflow-x:auto;">
   <table class="lines-table">
-    <tr><th>Nº</th>{% for c in ls.columns %}<th>{{ c }}</th>{% endfor %}</tr>
+    <thead><tr><th>Nº</th>{% for c in ls.columns %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+    <tbody>
     {% for r in ls.rows %}
     <tr class="{{ 'failed-line' if r.failed else 'passed-line' }}">
       <td>{{ r.n }}</td>{% for v in r.cells %}<td>{{ v[:40] }}</td>{% endfor %}
     </tr>
     {% endfor %}
+    </tbody>
   </table>
   </div>
   {% endfor %}
@@ -322,7 +292,7 @@ DEFAULT_META = {
 def render_html(document: dict, meta: dict | None = None, parsed=None) -> str:
     full_meta = {**DEFAULT_META, **(meta or {})}
     model = build_model(document, full_meta, parsed=parsed)
-    return _TEMPLATE.render(**model)
+    return _TEMPLATE.render(css=REPORT_CSS, **model)
 
 
 def generate_report(

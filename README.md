@@ -275,21 +275,27 @@ project-report --project RIESGO --embed                # versión "todo-en-uno" 
 
 ![Informe consolidado por proyecto](docs/project-report.png)
 
+Cada interfaz enlaza a su **informe ejecutivo** individual (drill-down):
+
+![Informe ejecutivo por interfaz](docs/executive-report.png)
+
 ## 📊 Dashboards de reportería (Metabase)
 
 El stack incluye **Metabase** para visualizar la reportería sin escribir código,
-leyendo directamente las vistas `vw_*`.
+leyendo directamente las vistas `vw_*`, y un servicio **nginx** que sirve los
+informes generados para poder **descargarlos desde el propio dashboard**.
 
 ```bash
-docker compose up -d                 # PostgreSQL + Metabase
+docker compose up -d                 # PostgreSQL + Metabase + servidor de informes
 pip install -e ".[viz]"
 python scripts/setup_metabase.py     # autoconfigura admin + datasource + dashboard
-# -> http://localhost:3000/dashboard/2   (admin@gx.local / gxgxgxgx1)
+# -> http://localhost:3000   (admin@gx.local / gxgxgxgx1)
+# Informes servidos en http://localhost:8080  (genera con: project-report --project <KEY> --output output)
 ```
 
-El script crea automáticamente la conexión a la BD y un dashboard con
-**validaciones vs. comparaciones por proyecto**, **% de éxito promedio**,
-**errores más comunes** y **actividad por interfaz**.
+El dashboard muestra **KPIs**, **validaciones vs. comparaciones por proyecto**,
+**errores más comunes** y **actividad por interfaz**, e incluye un panel con el
+**enlace de descarga** del informe consolidado.
 
 ![Dashboard de Metabase — reportería por proyecto](docs/metabase-dashboard.png)
 

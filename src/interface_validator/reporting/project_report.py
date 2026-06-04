@@ -21,6 +21,7 @@ from jinja2 import Template
 from .. import config
 from .html_report import render_html
 from .pdf import html_to_pdf
+from .styles import REPORT_CSS
 
 
 # --------------------------------------------------------------------------- #
@@ -195,87 +196,73 @@ _TEMPLATE = Template(r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <title>Informe de Proyecto — {{ project.project_key }}</title>
-<style>
-  @page { size: A4; margin: 1.6cm; @bottom-right { content: counter(page) " / " counter(pages); font-size: 9pt; } }
-  body { font-family: 'Segoe UI', Calibri, sans-serif; color: #2b2b2b; font-size: 10.5pt; margin: 0; }
-  .container { max-width: 200mm; margin: 0 auto; padding: 16px; }
-  .header { text-align: center; color: #fff; padding: 18px; border-radius: 6px;
-            background: linear-gradient(135deg, #1f3c88, #4F81BD); box-shadow: 0 2px 6px rgba(0,0,0,.15); }
-  .header .title { font-size: 19pt; font-weight: 700; margin: 4px 0; }
-  .header .sub { font-size: 9.5pt; opacity: .9; }
-  .kpis { display: flex; gap: 12px; margin: 18px 0; flex-wrap: wrap; }
-  .kpi { flex: 1; min-width: 150px; background: #f4f7fb; border-left: 4px solid #4F81BD;
-         border-radius: 6px; padding: 12px 14px; }
-  .kpi .v { font-size: 22pt; font-weight: 700; color: #1f3c88; }
-  .kpi .l { font-size: 9pt; color: #555; }
-  .section-header { background: linear-gradient(to right, #1f3c88, #4F81BD); color: #fff;
-                    padding: 7px 12px; font-weight: 700; border-radius: 4px; margin: 22px 0 6px; font-size: 11pt; }
-  table { width: 100%; border-collapse: collapse; margin: 8px 0 16px; font-size: 9.5pt; }
-  th { background: #4F81BD; color: #fff; padding: 7px; text-align: center; font-weight: 600; }
-  td { padding: 6px 7px; border: 0.5pt solid #d9d9d9; vertical-align: top; }
-  .center { text-align: center; }
-  .badge { padding: 2px 10px; border-radius: 12px; font-weight: 700; font-size: 8.5pt; }
-  .ok  { color: #1b5e20; background: #E8F5E9; border: 1px solid #1b5e20; }
-  .no  { color: #b71c1c; background: #FFEBEE; border: 1px solid #b71c1c; }
-  .found { font-family: Consolas, monospace; color: #b71c1c; font-size: 8.5pt; }
-  a { color: #1f3c88; }
-  .links { margin: 18px 0; padding: 10px 14px; background: #f4f7fb; border-radius: 6px; font-size: 9.5pt; }
-  .muted { color: #888; font-size: 8.5pt; text-align: center; margin-top: 22px; }
-  .embed-block { border: 1px solid #d9d9d9; border-radius: 6px; padding: 8px 12px; margin: 8px 0; }
-  .embed-block h4 { margin: 4px 0; color: #1f3c88; }
+<style>{{ css }}
+  .embed-block{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:10px 14px; margin:10px 0; }
+  .embed-block h4{ margin:4px 0 8px; color:var(--primary-dark); }
 </style>
 </head>
 <body>
 <div class="container">
 
   <div class="header">
-    <div class="sub">{{ meta.organization or 'Área de Calidad de Datos' }}</div>
-    <div class="title">INFORME CONSOLIDADO DE INTERFACES</div>
-    <div class="sub">{{ project.name }} · {{ project.project_key }} · {{ generated_at }}</div>
+    <div class="org">{{ meta.organization or 'Área de Calidad de Datos' }}</div>
+    <h1>INFORME CONSOLIDADO DE INTERFACES</h1>
+    <div class="sub">{{ project.name }} · {{ project.project_key }}
+      <span class="chip">{{ generated_at }}</span></div>
   </div>
 
-  <div class="section-header">Resumen General</div>
-  <div class="kpis">
-    <div class="kpi"><div class="v">{{ kpis.interfaces_validadas }}</div><div class="l">Interfaces validadas</div></div>
-    <div class="kpi"><div class="v">{{ kpis.interfaces_comparadas }}</div><div class="l">Interfaces comparadas</div></div>
-    <div class="kpi"><div class="v">{{ kpis.pct_exito_validacion }}%</div><div class="l">Éxito en validación ({{ kpis.validadas_ok }}/{{ kpis.interfaces_validadas }})</div></div>
-    <div class="kpi"><div class="v">{{ kpis.pct_exito_comparacion }}%</div><div class="l">Éxito en comparación ({{ kpis.comparadas_ok }}/{{ kpis.interfaces_comparadas }})</div></div>
+  <div class="section-title">Resumen General</div>
+  <div class="hero">
+    <div class="donut" style="--pct:{{ kpis.pct_exito_validacion }}; --dcol:{{ '#15a34a' if kpis.pct_exito_validacion >= 100 else '#d97706' if kpis.pct_exito_validacion >= 50 else '#dc2626' }};">
+      <div class="hole"><b>{{ kpis.pct_exito_validacion }}%</b><small>validación</small></div>
+    </div>
+    <div class="donut" style="--pct:{{ kpis.pct_exito_comparacion }}; --dcol:{{ '#15a34a' if kpis.pct_exito_comparacion >= 100 else '#d97706' if kpis.pct_exito_comparacion >= 50 else '#dc2626' }};">
+      <div class="hole"><b>{{ kpis.pct_exito_comparacion }}%</b><small>comparación</small></div>
+    </div>
+    <div class="card kpi"><div class="value">{{ kpis.interfaces_validadas }}</div><div class="label">Interfaces validadas ({{ kpis.validadas_ok }} OK)</div></div>
+    <div class="card kpi"><div class="value">{{ kpis.interfaces_comparadas }}</div><div class="label">Interfaces comparadas ({{ kpis.comparadas_ok }} OK)</div></div>
   </div>
 
-  <div class="section-header">Análisis de Expectativas Fallidas</div>
+  <div class="section-title">Análisis de Expectativas Fallidas</div>
   {% if failed_expectations %}
   <table>
-    <tr><th>Expectativa</th><th>Categoría</th><th>Secciones</th><th>Cant. Fallos</th><th>%</th><th>Interfaces afectadas</th></tr>
+    <thead><tr><th>Expectativa</th><th>Categoría</th><th>Secciones</th><th>Cant. Fallos</th><th>%</th><th>Interfaces afectadas</th></tr></thead>
+    <tbody>
     {% for f in failed_expectations %}
-    <tr><td>{{ f.expectation_type }}{% if f.column_name %} [{{ f.column_name }}]{% endif %}</td>
-        <td>{{ f.category }}</td><td>{{ f.secciones }}</td>
+    <tr><td>{{ f.expectation_type }}{% if f.column_name %} <span class="muted">[{{ f.column_name }}]</span>{% endif %}</td>
+        <td><b>{{ f.category }}</b></td><td>{{ f.secciones }}</td>
         <td class="center">{{ f.fallos }}</td><td class="center">{{ f.pct }}%</td>
         <td class="center">{{ f.interfaces_afectadas }}</td></tr>
     {% endfor %}
+    </tbody>
   </table>
-  {% else %}<p class="ok" style="padding:6px;">✓ Sin expectativas fallidas en el proyecto.</p>{% endif %}
+  {% else %}<div class="note ok-text">✓ Sin expectativas fallidas en el proyecto.</div>{% endif %}
 
-  <div class="section-header">Análisis de Errores de Comparación</div>
+  <div class="section-title">Análisis de Errores de Comparación</div>
   {% if comparison_errors %}
   <table>
-    <tr><th>Tipo de Error</th><th>Ocurrencias</th><th>Interfaces</th><th>% del Total</th></tr>
+    <thead><tr><th>Tipo de Error</th><th>Ocurrencias</th><th>Interfaces</th><th>% del Total</th></tr></thead>
+    <tbody>
     {% for c in comparison_errors %}
     <tr><td>{{ c.discrepancy_type }}</td><td class="center">{{ c.ocurrencias }}</td>
         <td class="center">{{ c.interfaces }}</td><td class="center">{{ c.pct }}%</td></tr>
     {% endfor %}
+    </tbody>
   </table>
   {% else %}<p class="muted">Sin comparaciones registradas para este proyecto.</p>{% endif %}
 
-  <div class="section-header">Detalle de Interfaces Validadas</div>
+  <div class="section-title">Detalle de Interfaces Validadas</div>
   <table>
-    <tr><th>Interfaz</th><th>Fecha</th><th>Evaluadas</th><th>Exitosas</th><th>Fallidas</th><th>Tasa</th><th>Estado</th><th>Detalle</th></tr>
+    <thead><tr><th>Interfaz</th><th>Fecha</th><th>Evaluadas</th><th>Exitosas</th><th>Fallidas</th><th>Tasa</th><th>Estado</th><th>Detalle</th></tr></thead>
+    <tbody>
     {% for v in validated %}
-    <tr><td>{{ v.interface }}</td><td class="center">{{ v.interface_date }}</td>
+    <tr><td><b>{{ v.interface }}</b></td><td class="center">{{ v.interface_date }}</td>
         <td class="center">{{ v.total_expectations }}</td><td class="center">{{ v.successful }}</td>
         <td class="center">{{ v.failed }}</td><td class="center">{{ v.success_percent }}%</td>
-        <td class="center"><span class="badge {{ 'ok' if v.success else 'no' }}">{{ 'APROBADO' if v.success else 'RECHAZADO' }}</span></td>
-        <td class="center">{% if v.report_link %}<a href="{{ v.report_link }}">ver informe</a>{% else %}-{% endif %}</td></tr>
+        <td class="center"><span class="pill {{ 'pill-ok' if v.success else 'pill-bad' }}">{{ 'APROBADO' if v.success else 'RECHAZADO' }}</span></td>
+        <td class="center">{% if v.report_link %}<a href="{{ v.report_link }}">ver informe →</a>{% else %}-{% endif %}</td></tr>
     {% endfor %}
+    </tbody>
   </table>
 
   {% if embed %}
@@ -283,44 +270,48 @@ _TEMPLATE = Template(r"""<!DOCTYPE html>
   <div class="embed-block">
     <h4>{{ v.interface }} — expectativas fallidas</h4>
     <table>
-      <tr><th>Sección</th><th>Categoría</th><th>Columna</th><th>Valor esperado</th><th>Encontrado</th><th>Líneas</th></tr>
+      <thead><tr><th>Sección</th><th>Categoría</th><th>Columna</th><th>Valor esperado</th><th>Encontrado</th><th>Líneas</th></tr></thead>
+      <tbody>
       {% for d in v.failed_details %}
       <tr><td class="center">{{ d.section }}</td><td>{{ d.category }}</td><td>{{ d.column_name }}</td>
           <td>{{ d.expected_text }}</td><td class="found">{{ d.found_examples }}</td>
           <td class="center">{{ d.affected_lines }}</td></tr>
       {% endfor %}
+      </tbody>
     </table>
   </div>
   {% endif %}{% endfor %}
   {% endif %}
 
-  <div class="section-header">Detalle de Interfaces Comparadas</div>
+  <div class="section-title">Detalle de Interfaces Comparadas</div>
   {% if compared %}
   <table>
-    <tr><th>Interfaz</th><th>Modo</th><th>Archivos</th><th>Coincidencia</th><th>Solo A</th><th>Solo B</th><th>Difieren</th></tr>
+    <thead><tr><th>Interfaz</th><th>Modo</th><th>Archivos</th><th>Coincidencia</th><th>Solo A</th><th>Solo B</th><th>Difieren</th></tr></thead>
+    <tbody>
     {% for c in compared %}
-    <tr><td>{{ c.interface }}</td><td class="center">{{ c.mode }}</td>
-        <td>{{ c.file_a }} vs {{ c.file_b }}</td><td class="center">{{ c.match_percent }}%</td>
+    <tr><td><b>{{ c.interface }}</b></td><td class="center">{{ c.mode }}</td>
+        <td class="muted">{{ c.file_a }} vs {{ c.file_b }}</td><td class="center">{{ c.match_percent }}%</td>
         <td class="center">{{ c.only_in_a }}</td><td class="center">{{ c.only_in_b }}</td>
         <td class="center">{{ c.differing }}</td></tr>
     {% endfor %}
+    </tbody>
   </table>
   {% else %}<p class="muted">Sin comparaciones registradas.</p>{% endif %}
 
-  <div class="links">
+  <div class="linkbar">
     🔗 Vistas complementarias:
     <a href="{{ metabase_url }}">Dashboard interactivo (Metabase)</a> ·
     <a href="{{ allure_url }}">Reporte de pruebas QA (Allure)</a>
   </div>
 
-  <p class="muted">Generado automáticamente por gx-interface-validator · {{ generated_at }} · Datos de ejemplo ficticios.</p>
+  <p class="muted" style="text-align:center; margin-top:22px;">Generado automáticamente por gx-interface-validator · {{ generated_at }} · Datos de ejemplo ficticios.</p>
 </div>
 </body>
 </html>""")
 
 
 def render_project_html(model: dict) -> str:
-    return _TEMPLATE.render(**model)
+    return _TEMPLATE.render(css=REPORT_CSS, **model)
 
 
 def generate_project_report(conn, project: str, output_dir, meta: dict | None = None,
