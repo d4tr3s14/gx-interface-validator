@@ -169,6 +169,8 @@ def build_model(conn, project: str, meta: dict | None = None, embed: bool = Fals
                 ORDER BY s.section
             """, {"rid": v["run_id"]})
 
+    certification = _certify(validated, compared)
+
     return {
         "project": proj, "meta": meta or {},
         "generated_at": datetime.now().strftime("%d/%m/%Y %H:%M"),
@@ -178,6 +180,7 @@ def build_model(conn, project: str, meta: dict | None = None, embed: bool = Fals
             "interfaces_comparadas": n_cmp, "comparadas_ok": n_cmp_ok,
             "pct_exito_comparacion": round(n_cmp_ok / n_cmp * 100, 1) if n_cmp else 0.0,
         },
+        "certification": certification,
         "failed_expectations": failed_expectations,
         "comparison_errors": comparison_errors,
         "validated": validated,
@@ -185,6 +188,58 @@ def build_model(conn, project: str, meta: dict | None = None, embed: bool = Fals
         "embed": embed,
         "metabase_url": config.METABASE_URL,
         "allure_url": config.ALLURE_URL,
+    }
+
+
+def _certify(validated: list[dict], compared: list[dict]) -> dict:
+    """
+    Determina si el proyecto es APTO PARA CERTIFICAR según criterios explícitos,
+    y lista los bloqueantes que impiden el cierre.
+    """
+    min_pct = config.CERT_MIN_VALIDATION_PERCENT
+    max_diffs = config.CERT_MAX_COMPARISON_DIFFS
+
+    # Bloqueantes de validación: interfaces que no alcanzan el umbral.
+    val_fail = [v for v in validated if (v["success_percent"] or 0) < min_pct]
+    # Bloqueantes de comparación: comparaciones con más diferencias de las toleradas.
+    cmp_fail = [c for c in compared
+                if (c["only_in_a"] or 0) + (c["only_in_b"] or 0) + (c["differing"] or 0) > max_diffs]
+
+    blockers = []
+    for v in val_fail:
+        blockers.append({
+            "tipo": "Validación",
+            "interfaz": v["interface"],
+            "detalle": f"{v['failed']} expectativa(s) fallida(s) · {v['success_percent']}% (< {min_pct}%)",
+        })
+    for c in cmp_fail:
+        diffs = (c["only_in_a"] or 0) + (c["only_in_b"] or 0) + (c["differing"] or 0)
+        blockers.append({
+            "tipo": "Comparación",
+            "interfaz": c["interface"],
+            "detalle": f"{diffs} diferencia(s) · coincidencia {c['match_percent']}%",
+        })
+
+    has_scope = len(validated) > 0
+    criteria = [
+        {"name": f"Todas las interfaces validadas alcanzan ≥ {min_pct}% de aprobación",
+         "passed": len(val_fail) == 0 and has_scope,
+         "detalle": f"{len(validated) - len(val_fail)}/{len(validated)} cumplen"},
+        {"name": f"Todas las comparaciones tienen ≤ {max_diffs} diferencia(s)",
+         "passed": len(cmp_fail) == 0,
+         "detalle": (f"{len(compared) - len(cmp_fail)}/{len(compared)} cumplen"
+                     if compared else "sin comparaciones (N/A)")},
+        {"name": "Existe al menos una interfaz validada en el alcance",
+         "passed": has_scope, "detalle": f"{len(validated)} interfaz(es)"},
+    ]
+
+    apto = all(c["passed"] for c in criteria)
+    return {
+        "apto": apto,
+        "verdict": "APTO PARA CERTIFICAR" if apto else "NO APTO PARA CERTIFICAR",
+        "criterio": f"Validación ≥ {min_pct}% · comparación ≤ {max_diffs} diferencia(s)",
+        "criteria": criteria,
+        "blockers": blockers,
     }
 
 
@@ -199,6 +254,14 @@ _TEMPLATE = Template(r"""<!DOCTYPE html>
 <style>{{ css }}
   .embed-block{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:10px 14px; margin:10px 0; }
   .embed-block h4{ margin:4px 0 8px; color:var(--primary-dark); }
+  .cert{ border-radius:14px; padding:18px 22px; margin:16px 0; color:#fff; box-shadow:0 6px 18px rgba(0,0,0,.12); }
+  .cert-ok{ background:linear-gradient(135deg,#15803d,#22c55e); }
+  .cert-no{ background:linear-gradient(135deg,#b91c1c,#ef4444); }
+  .cert .verdict{ font-size:17pt; font-weight:800; letter-spacing:.4px; }
+  .cert .cert-sub{ opacity:.92; font-size:9.5pt; margin-top:2px; }
+  .crit-ok{ color:var(--ok); font-weight:700; } .crit-no{ color:var(--bad); font-weight:700; }
+  .signoff{ display:flex; gap:40px; margin-top:14px; }
+  .signoff .sig{ flex:1; border-top:1px solid #94a3b8; padding-top:6px; color:var(--muted); font-size:8.8pt; text-align:center; }
 </style>
 </head>
 <body>
@@ -210,6 +273,36 @@ _TEMPLATE = Template(r"""<!DOCTYPE html>
     <div class="sub">{{ project.name }} · {{ project.project_key }}
       <span class="chip">{{ generated_at }}</span></div>
   </div>
+
+  <!-- Veredicto de certificación -->
+  <div class="cert {{ 'cert-ok' if certification.apto else 'cert-no' }}">
+    <div class="verdict">{{ '✓' if certification.apto else '✕' }} {{ certification.verdict }}</div>
+    <div class="cert-sub">Proyecto {{ project.project_key }} · evaluado el {{ generated_at }}</div>
+  </div>
+
+  <div class="section-title">Criterios de Certificación</div>
+  <table>
+    <thead><tr><th>Criterio</th><th>Estado</th><th>Detalle</th></tr></thead>
+    <tbody>
+    {% for c in certification.criteria %}
+    <tr><td>{{ c.name }}</td>
+        <td class="center {{ 'crit-ok' if c.passed else 'crit-no' }}">{{ '✓ CUMPLE' if c.passed else '✕ NO CUMPLE' }}</td>
+        <td>{{ c.detalle }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  {% if certification.blockers %}
+  <div class="section-title">Bloqueantes para la certificación</div>
+  <table>
+    <thead><tr><th>Tipo</th><th>Interfaz</th><th>Detalle</th></tr></thead>
+    <tbody>
+    {% for b in certification.blockers %}
+    <tr><td>{{ b.tipo }}</td><td><b>{{ b.interfaz }}</b></td><td>{{ b.detalle }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
 
   <div class="section-title">Resumen General</div>
   <div class="hero">
@@ -298,10 +391,24 @@ _TEMPLATE = Template(r"""<!DOCTYPE html>
   </table>
   {% else %}<p class="muted">Sin comparaciones registradas.</p>{% endif %}
 
-  <div class="linkbar">
-    🔗 Vistas complementarias:
-    <a href="{{ metabase_url }}">Dashboard interactivo (Metabase)</a> ·
-    <a href="{{ allure_url }}">Reporte de pruebas QA (Allure)</a>
+  <div class="section-title">Certificación / Sign-off</div>
+  <div class="metastrip">
+    <div class="m"><b>Responsable QA</b>{{ meta.responsible or 'Equipo QA' }}</div>
+    <div class="m"><b>Fecha</b>{{ generated_at }}</div>
+    <div class="m"><b>Versión informe</b>{{ meta.version or '1.0' }}</div>
+    <div class="m"><b>Ambiente</b>{{ meta.environment or 'QA' }}</div>
+    <div class="m"><b>Alcance</b>{{ project.name }} · {{ kpis.interfaces_validadas }} interfaz(es)</div>
+    <div class="m"><b>Criterio aplicado</b>{{ certification.criterio }}</div>
+  </div>
+  <div class="signoff">
+    <div class="sig">Certifica · Responsable QA</div>
+    <div class="sig">Aprueba · Product Owner</div>
+  </div>
+
+  <div class="linkbar" style="margin-top:18px;">
+    🔗 Para el detalle técnico (QA): <a href="{{ allure_url }}">Allure</a> ·
+    para el monitoreo interactivo: <a href="{{ metabase_url }}">Metabase</a> ·
+    el detalle de negocio por interfaz está en la tabla de arriba («ver informe»).
   </div>
 
   <p class="muted" style="text-align:center; margin-top:22px;">Generado automáticamente por gx-interface-validator · {{ generated_at }} · Datos de ejemplo ficticios.</p>

@@ -33,6 +33,10 @@ def test_generate_project_report(tmp_path):
     assert model["project"]["project_key"] == "DEMO"
     # El informe ejecutivo por interfaz (drill-down) también se generó
     assert any(p.name.startswith("Informe_") and p.suffix == ".html" for p in tmp_path.iterdir())
+    # Veredicto de certificación presente y coherente
+    cert = model["certification"]
+    assert cert["verdict"] in ("APTO PARA CERTIFICAR", "NO APTO PARA CERTIFICAR")
+    assert cert["apto"] == all(c["passed"] for c in cert["criteria"])
 
 
 def test_unknown_project_raises():
