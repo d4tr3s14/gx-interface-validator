@@ -17,3 +17,9 @@ SECTION_ORDER = ("header", "body", "footer", "cross_section")
 # URLs de las vistas técnicas/interactivas (enlazadas desde el informe de proyecto).
 METABASE_URL = os.getenv("METABASE_URL", "http://localhost:3000")
 ALLURE_URL = os.getenv("ALLURE_URL", "https://d4tr3s14.github.io/gx-interface-validator/")
+
+# Criterios de certificación del informe de proyecto.
+#  - cada interfaz validada debe alcanzar este % de aprobación
+#  - cada comparación debe quedar en/bajo esta cantidad de diferencias
+CERT_MIN_VALIDATION_PERCENT = float(os.getenv("CERT_MIN_VALIDATION_PERCENT", "100"))
+CERT_MAX_COMPARISON_DIFFS = int(os.getenv("CERT_MAX_COMPARISON_DIFFS", "0"))

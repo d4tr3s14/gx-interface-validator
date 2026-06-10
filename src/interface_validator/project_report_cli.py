@@ -28,7 +28,21 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--embed", action="store_true",
                         help="Incluye el detalle por interfaz embebido (un solo documento).")
     parser.add_argument("--output", "-o", default=None, help="Directorio de salida.")
+    # Metadatos de certificación / sign-off
+    parser.add_argument("--responsible", default=None, help="Responsable QA que certifica.")
+    parser.add_argument("--version", default=None, help="Versión del informe (ej. 1.0).")
+    parser.add_argument("--environment", default=None, help="Ambiente (QA, PROD, ...).")
+    parser.add_argument("--organization", default=None, help="Área / organización.")
     return parser
+
+
+def _meta_from_args(args) -> dict:
+    meta = {}
+    for key, value in (("responsible", args.responsible), ("version", args.version),
+                       ("environment", args.environment), ("organization", args.organization)):
+        if value:
+            meta[key] = value
+    return meta
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -43,7 +57,8 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         outputs = generate_project_report(
-            conn, args.project, out_dir, fmt=args.format, embed=args.embed
+            conn, args.project, out_dir, meta=_meta_from_args(args),
+            fmt=args.format, embed=args.embed
         )
     except ValueError as exc:
         print(f"[ERROR] {exc}", file=sys.stderr)
@@ -53,7 +68,10 @@ def main(argv: list[str] | None = None) -> int:
 
     m = outputs["model"]
     k = m["kpis"]
+    cert = m["certification"]
     print(f"Proyecto : {m['project']['project_key']} — {m['project']['name']}")
+    print(f"Veredicto: {cert['verdict']}"
+          + (f"  ({len(cert['blockers'])} bloqueante(s))" if cert["blockers"] else ""))
     print(f"Validadas: {k['interfaces_validadas']} ({k['pct_exito_validacion']}% éxito)  ·  "
           f"Comparadas: {k['interfaces_comparadas']} ({k['pct_exito_comparacion']}% éxito)")
     print(f"HTML     : {outputs['html']}")
